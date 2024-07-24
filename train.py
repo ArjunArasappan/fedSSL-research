@@ -61,7 +61,7 @@ def load_model(useResnet18):
     
     simclr = SimCLR(DEVICE, useResnet18=useResnet18).to(DEVICE)
 
-    list_of_files = [fname for fname in glob.glob("./centralized_weights/model_round_*")]
+    list_of_files = [fname for fname in glob.glob("./centralized_weights/centralized_model_*.pth")]
     latest_round_file = max(list_of_files, key=os.path.getctime)
     print("Loading pre-trained model from:", latest_round_file)
     state_dict = torch.load(latest_round_file)
