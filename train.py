@@ -4,7 +4,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader
-from model import SimCLR, SimCLRPredictor
+from model import SimCLRPredictor
 from flwr_datasets import FederatedDataset
 from flwr_datasets.partitioner import IidPartitioner
 import torchvision.transforms as transforms
@@ -59,22 +59,27 @@ def load_data():
 def load_model(useResnet18):
     global simclr_predictor
     
-    simclr = SimCLR(DEVICE, useResnet18=useResnet18).to(DEVICE)
-
     list_of_files = [fname for fname in glob.glob("./centralized_weights/centralized_model_*.pth")]
+    if list_of_files == []:
+        return 0
     latest_round_file = max(list_of_files, key=os.path.getctime)
     print("Loading pre-trained model from:", latest_round_file)
+    print(latest_round_file)
+    accuracy = latest_round_file.split('/')[2].split('_')[2].split('.pth')[0]
+    accuracy = float(accuracy)
+    
     state_dict = torch.load(latest_round_file)
     
-    simclr.load_state_dict(state_dict)
+    simclr_predictor.load_state_dict(state_dict, strict = True)
     
-    weights = [v.cpu().numpy() for v in simclr.state_dict().values()]
-    
-    simclr_predictor.set_encoder_parameters(weights)
+    return accuracy
 
 def centralized_train(useResnet18):
     global simclr_predictor
     simclr_predictor = SimCLRPredictor(utils.NUM_CLASSES, DEVICE, useResnet18=utils.useResnet18, tune_encoder=utils.fineTuneEncoder).to(DEVICE)
+    
+    # preacc = load_model(False)
+    preacc = 0
     
     trainset, testset = load_data()
     
@@ -88,16 +93,16 @@ def centralized_train(useResnet18):
     
     criterion = nn.CrossEntropyLoss()
     
-    train(trainloader, testloader, optimizer, criterion, scheduler )
+    train(trainloader, testloader, optimizer, criterion, scheduler, preacc)
     
     
-def train(trainloader, testloader, optimizer, criterion, scheduler ):
+def train(trainloader, testloader, optimizer, criterion, scheduler, preacc):
 
-    maxAccuracy = 0
+    maxAccuracy = preacc
     
     iters = 0
     
-    while maxAccuracy < 0.90:
+    while maxAccuracy < 0.94:
         trainAccuracy = train_predictor(trainloader, optimizer, criterion )
 
     
@@ -121,13 +126,15 @@ def train(trainloader, testloader, optimizer, criterion, scheduler ):
             writer = csv.writer(file)
             writer.writerow(data)
             
-        maxAccuracy = max(testAccuracy, maxAccuracy)
+
         
-        if maxAccuracy == testAccuracy:
+        if maxAccuracy <= testAccuracy:
             acc = int(testAccuracy * 1000) / 1000
             save_model(acc)
             
-        scheduler.step()
+        maxAccuracy = max(testAccuracy, maxAccuracy)
+            
+        # scheduler.step()
         iters += 1
         
 
@@ -210,10 +217,10 @@ def evaluate(testloader, criterion):
 def save_model(acc):
     global count
     
-    if not os.path.isdir('centralized_weights'):
-        os.mkdir('centralized_weights')
+    if not os.path.isdir('weights_nosched'):
+        os.mkdir('weights_nosched')
         
-    torch.save(simclr_predictor.state_dict(), f"./centralized_weights/centralized_model_{acc}.pth")
+    torch.save(simclr_predictor.state_dict(), f"./weights_nosched/centralized_model_{acc}.pth")
     count += 1
 
 if __name__ == "__main__":
