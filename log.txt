@@ -25,3 +25,5 @@
 3,test accuracy,0.4387
 4,train accuracy,0.4617
 4,test accuracy,0.4171
+0,train accuracy,0.1761
+0,test accuracy,0.2717

@@ -3,17 +3,9 @@ from collections import OrderedDict
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import torchvision.transforms as transforms
-from torch.utils.data import DataLoader
-from torchvision.datasets import CIFAR10
 from torchvision.models import resnet18, ResNet18_Weights, resnet50, ResNet50_Weights
-from flwr.common.logger import log
-from logging import INFO, DEBUG
-from flwr.common import NDArrays, Scalar
-from typing import Dict, Optional, Tuple, List
 
-import csv
-
+import utils
 
 
 class NTXentLoss(nn.Module):
@@ -47,7 +39,7 @@ class NTXentLoss(nn.Module):
 
 
 class MLP(nn.Module):
-    def __init__(self, dim, projection_size, hidden_size=4096):
+    def __init__(self, dim, projection_size, hidden_size):
         super().__init__()
         self.in_features = dim
         self.out_features = projection_size
@@ -91,14 +83,22 @@ class SimCLR(nn.Module):
         return self.proj_head(e1)
 
 class SimCLRPredictor(nn.Module):
-    def __init__(self, num_classes, device, useResnet18 = True, tune_encoder = False):
+    def __init__(self, num_classes, device, useResnet18 = True, tune_encoder = False, linear_predictor = True):
         super(SimCLRPredictor, self).__init__()
                 
         self.simclr = SimCLR(device, useResnet18 = useResnet18).to(device)
-        self.linear_predictor = nn.Linear(self.simclr.encoded_size, num_classes)
+        
+        if linear_predictor:
+            self.linear_predictor = nn.Linear(self.simclr.encoded_size, num_classes)
+        else:
+            self.linear_predictor = MLP(self.simclr.encoded_size, num_classes, self.simclr.encoded_size)
+        
         self.simclr.setInference(True)
         
-        if not tune_encoder:
+        if tune_encoder:
+            for param in self.simclr.parameters():
+                param.requires_grad = True
+        else:
             for param in self.simclr.parameters():
                 param.requires_grad = False
                 
@@ -108,6 +108,10 @@ class SimCLRPredictor(nn.Module):
         state_dict = OrderedDict({k: torch.tensor(v) for k, v in params_dict})
         
         self.simclr.load_state_dict(state_dict, strict=True)
+    
+    def getLatent(self, x):
+        self.simclr.setInference(True)
+        return self.simclr(x)
 
     def forward(self, x):
         self.simclr.setInference(True)
@@ -115,4 +119,3 @@ class SimCLRPredictor(nn.Module):
         output = self.linear_predictor(features)
         return output
     
-

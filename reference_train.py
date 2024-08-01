@@ -23,39 +23,6 @@ count = 0
 log_path = "./log.txt"
 
 
-def applyTrainTransform(batch):
-    
-    transform_train = transforms.Compose([
-        transforms.RandomCrop(32, padding=4),
-        transforms.RandomHorizontalFlip(),
-        transforms.ToTensor(),
-        transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
-    ])
-        
-    batch["img"] = [transform_train(img) for img in batch["img"]]
-    return batch
-
-def applyTestTransform(batch):
-    
-    transform_test = transforms.Compose([
-        transforms.ToTensor(),
-        transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
-    ])
-        
-    batch["img"] = [transform_test(img) for img in batch["img"]]
-    return batch
-
-def load_data():
-    fds = FederatedDataset(dataset="cifar10", partitioners = {'train' : IidPartitioner(1), 'test' : IidPartitioner(1)})
-    
-    train_data = fds.load_split("train")
-    train_data = train_data.with_transform(applyTrainTransform)
-
-    test_data = fds.load_split("test")
-    test_data = test_data.with_transform(applyTestTransform)
-
-    return train_data, test_data
-
 def load_model(useResnet18):
     global simclr_predictor
     
