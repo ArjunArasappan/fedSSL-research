@@ -41,8 +41,9 @@ def ssl_train(useResnet18):
     eval = EvalMetric(trainset, testset)
     
     eval.load_reference()
-    eval.evaluateReference()
+    # eval.evaluateReference()
     eval.selectAnchors()
+    eval.calcReferenceLatents()
     
 
     
