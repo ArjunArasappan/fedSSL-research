@@ -21,9 +21,9 @@ def get_mean_stddev(data):
 
 def applyTrainTransform(batch):
     transform_train = transforms.Compose([
+        transforms.ToTensor(),
         transforms.RandomCrop(32, padding=4),
         transforms.RandomHorizontalFlip(),
-        transforms.ToTensor(),
         transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
     ])
         
@@ -40,7 +40,7 @@ def applyTestTransform(batch):
     batch["img"] = [transform_test(img) for img in batch["img"]]
     return batch
 
-def applySSLAugment():
+def applySSLAugment(batch):
     batch["img"] = [ssl_transform(img, True) for img in batch["img"]]
     return batch
 
