@@ -13,6 +13,8 @@ useResnet18 = False
 fineTuneEncoder = True
 DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
+log_path = './ssl_log.txt'
+
 def get_mean_stddev(data):
     mean = np.mean(data, axis=(0, 1, 2))
     std = np.std(data, axis=(0, 1, 2))
@@ -80,3 +82,8 @@ def load_augmented():
     
 
     return train_data, test_data
+
+def ssl_log(data):
+    with open(log_path, 'a', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(data)

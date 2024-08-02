@@ -10,7 +10,7 @@ import random
 DEVICE = utils.DEVICE
 
 class EvalMetric:
-    def __init__(self, trainset, testset, num_anchors = 200):
+    def __init__(self, trainset, testset, num_anchors = 300):
         self.reference_model = SimCLRPredictor(10, DEVICE, useResnet18=False).to(DEVICE)
         self.num_anchors = num_anchors
         self.cross_entropy = nn.CrossEntropyLoss()
@@ -97,7 +97,7 @@ class EvalMetric:
         #anchors have shape of (200, 3, 32, 32)
         
     def calcReferenceAnchorLatents(self):
-        #caluclate latent representations of anchors for reference model
+        #caluclate latent representations of anchors for reference model and normalize latents
         self.reference_model.eval()
         
         
@@ -143,9 +143,8 @@ class EvalMetric:
         
         similarities = torch.sum(t1 * t2, dim=1)
         print(similarities)
-        sim_score = torch.sim(similarities).item()
         
-        return sim_score
+        return list(similarities), torch.mean(similarities).item(), torch.median(similarities).item()
         
         
         
