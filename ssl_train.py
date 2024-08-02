@@ -20,9 +20,10 @@ simclr = None
 DEVICE = utils.DEVICE
 
 EPOCHS = 10
-SEGMENTS = 10
+SEGMENTS = 190
 
-count = 0
+
+finetune_fraction = 0.1
 
 log_path = "./log.txt"
 
@@ -44,7 +45,7 @@ def main(useResnet18):
     relative_eval.load_reference()
     # eval.evaluateReference()
     relative_eval.selectAnchors()
-    relative_eval.calcReferenceLatents()
+    relative_eval.calcReferenceAnchorLatents()
     
     ssl_simulation(trainset, testset, useResnet18, relative_eval)
     
@@ -60,13 +61,15 @@ def ssl_simulation(trainset, testset, useResnet18, relative_eval):
     cross_entropy = nn.CrossEntropyLoss()
     
     
-    trainloader = DataLoader(trainset, batch_size = 256, shuffle = True, pin_memmory = True)
+    trainloader = DataLoader(trainset, batch_size = 256, shuffle = True)
 
     
     for epoch in range(EPOCHS * SEGMENTS):
         train(simclr, trainloader, simclr_optimizer, ntxent)
-        similarities, mean, mode = computeSimilarities(simclr, simclr_predictor, relative_eval)
-        accuracy = supervised_train(simclr, simclr_predictor, trainloader, cross_entropy)
+        similarities, mean, median = computeSimilarities(testset, simclr, relative_eval)
+        print(mean)
+        print(median)
+        supervised_train(simclr, simclr_predictor, trainloader, predictor_optimizer, cross_entropy)
     
 
 def train(net, trainloader, optimizer, criterion):
@@ -74,15 +77,17 @@ def train(net, trainloader, optimizer, criterion):
     
     num_batches = len(trainloader)
     batch = 0
-    total_loss = 0
     
     for item in trainloader:
         _, x_i, x_j = item['img']
         
         optimizer.zero_grad()
+        
+        x_i, x_j = x_i.to(DEVICE), x_j.to(DEVICE)
+        
+        z_i, z_j = net(x_i), net(x_j)
     
         loss = criterion(z_i, z_j)
-        total_loss += loss
 
         loss.backward()
         optimizer.step()
@@ -93,21 +98,48 @@ def train(net, trainloader, optimizer, criterion):
         if batch >= num_batches / SEGMENTS:
             break
         
-        
-    return total_loss / batch
-
-def computeSimilarities(simclr, data, relative_eval):
     
-    loader = DataLoader(data, pin_memmory = True, batch_size = len(data))
+def computeSimilarities(data, simclr, relative_eval):
+    
+    loader = DataLoader(data, batch_size = len(data))
     
     for idx, item in enumerate(loader):
-        print(f"Relatuve Eval: {idx}")
         
         batch = item['img']
         relative_eval.calcModelLatents(simclr)
-        similarities, mean, median = relative_eval.computeSimilarities(batch, model)
+        similarities, mean, median = relative_eval.computeSimilarity(batch, simclr)
         print(f"Relative Eval DONE: {mean}, {median}")
         return similarities, mean, median
+
+def supervised_train(simclr, simclr_predictor, trainloader, optimizer, criterion):
+    state_dict = simclr.state_dict()
+    weights = [v.cpu().numpy() for v in state_dict.values()]
+
+    simclr_predictor.set_encoder_parameters(weights)
+    
+    simclr_predictor.train()
+    
+    
+    num_batches = len(trainloader)
+    
+    for , item in enumerate(trainloader):
+        (x, _, _), labels = item['img'], item['label']
+        
+        x, labels = x.to(DEVICE), labels.to(DEVICE)
+        
+        optimizer.zero_grad()
+        
+        z = simclr_predictor(x)
+    
+        loss = criterion(z, labels)
+
+        loss.backward()
+        optimizer.step()
+
+        print(f"Client Train Batch: {idx} / {num_batches}")
+        if idx >= finetune_fraction * num_batches:
+            break        
+
     
 
 def save_model(acc):

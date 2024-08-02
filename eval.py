@@ -103,46 +103,46 @@ class EvalMetric:
         
         with torch.no_grad():
             # num_anchors * latentsize
-            anchor_latents = self.reference_model.getLatent(self.anchors)
-            
-            norms = torch.norm(anchor_latents, p=2, dim=1, keepdim=True)
-            
-            self.ref_anchor_latents = anchor_latents / norms
+            self.ref_anchor_latents = self.reference_model.getLatent(self.anchors)
 
 
     
     def getAnchors(self):
         return self.anchors
     
-    def calcModelLatents(model):
+    def calcModelLatents(self, model):
         model.eval()
         model.setInference(True)
         
         with torch.no_grad():
             #num_anchors * latentsize
-            anchor_latents = model(self.anchors)
+            self.model_anchor_latents = model(self.anchors)
             
-            norms = torch.norm(anchor_latents, p=2, dim=1, keepdim=True)
-
-            # Normalize each row by dividing by its norm
-            self.model_anchor_latents = anchor_latents / norms
     
     
-    def computeSimilarity(testbatch, model):
+    def computeSimilarity(self, testbatch, model):
         testbatch = testbatch.to(DEVICE)
         
         model.setInference(True)
         
         #batchsize x latentsize
         abs_model_latent = model(testbatch)
-        abs_ref_latent = self.reference.getLatent(testbatch)
+        # norm_model_latent = abs_model_latent / torch.norm(abs_model_latent, p=2, dim=1, keepdim=True)
+
+        abs_ref_latent = self.reference_model.getLatent(testbatch)
+        # norm_ref_latent = abs_ref_latent / torch.norm(abs_ref_latent, p=2, dim=1, keepdim=True)
+
         
         #batchsize x num_anchors
         relative_model = abs_model_latent @ self.model_anchor_latents.T
         relative_ref = abs_ref_latent @ self.ref_anchor_latents.T
+
+        rel_model_normed = relative_model / torch.norm(relative_model, p=2, dim=1, keepdim=True)
+        rel_ref_normed = relative_ref / torch.norm(relative_ref, p=2, dim=1, keepdim=True)
+    
+
         
-        similarities = torch.sum(t1 * t2, dim=1)
-        print(similarities)
+        similarities = torch.sum(rel_model_normed * rel_ref_normed, dim=1)
         
         return list(similarities), torch.mean(similarities).item(), torch.median(similarities).item()
         
