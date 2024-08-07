@@ -83,8 +83,8 @@ def load_augmented():
 
     return train_data, test_data
 
-def ssl_log(data):
-    with open(log_path, 'a', newline='') as file:
+def ssl_log(data, path = log_path):
+    with open(path, 'a', newline='') as file:
         writer = csv.writer(file)
         writer.writerow(data)
         

@@ -60,9 +60,11 @@ def main(useResnet18):
     print('cuh')
     
     for epoch in range(EPOCHS):
-        ssl_train(epoch, simclr, trainloader, simclr_optimizer, ntxent)
+        avgLoss = ssl_train(epoch, simclr, trainloader, simclr_optimizer, ntxent)
         if epoch > 100 and epoch % 5 == 0:
             save_model(epoch)
+            
+        utils.ssl_log([epoch, avgLoss], './log.txt')
         
 def load_model(simclr):
     
@@ -113,8 +115,8 @@ def save_model(epoch):
     global count, simclr
 
     
-    if not os.path.isdir('ssl_centralized'):
-        os.mkdir('ssl_centralized')
+    if not os.path.isdir('./ssl_centralized'):
+        os.mkdir('./ssl_centralized')
 
     torch.save(simclr.state_dict(), f"./ssl_centralized/ssl_centralized_model_{epoch}.pth")
 
