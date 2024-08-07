@@ -59,16 +59,16 @@ class SimCLR(nn.Module):
         super(SimCLR, self).__init__()
         
         if useResnet18:
-            self.encoder = resnet18(weights = None)
+            self.encoder = resnet18(weights = None).to(device)
         else:
-            self.encoder = resnet50(weights = None)
+            self.encoder = resnet50(weights = None).to(device)
 
 
         self.encoded_size = self.encoder.fc.in_features
         self.encoder.fc = nn.Identity()
         
         self.projected_size = projection_size                
-        self.proj_head = MLP(self.encoded_size, projection_size, projection_hidden_size)
+        self.proj_head = MLP(self.encoded_size, projection_size, projection_hidden_size).to(device)
 
         
         self.isInference = False

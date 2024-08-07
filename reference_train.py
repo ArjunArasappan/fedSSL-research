@@ -8,7 +8,7 @@ from model import SimCLR, SimCLRPredictor, NTXentLoss
 from flwr_datasets import FederatedDataset
 from flwr_datasets.partitioner import IidPartitioner
 import torchvision.transforms as transforms
-from eval import EvalMetric
+from eval_metric import EvalMetric
 import os
 
 import flwr as fl
@@ -31,6 +31,7 @@ useLinearPred = False
 
 def main(useResnet18):
     global simclr
+    print(DEVICE)
     #Data: load augmented train data for SimCLR, test data, 
     #unsupervised SSL learning of simCLR
     #apply relative representations to guess accuracy
@@ -53,15 +54,15 @@ def main(useResnet18):
 
 
     
-    
+    print('yuh')
     trainloader = DataLoader(trainset, batch_size = 512, shuffle = True)
     testloader = DataLoader(testset, batch_size = 256, shuffle = True)
-
+    print('cuh')
     
     for epoch in range(EPOCHS):
         ssl_train(epoch, simclr, trainloader, simclr_optimizer, ntxent)
         if epoch > 100 and epoch % 5 == 0:
-            save_model()
+            save_model(epoch)
         
 def load_model(simclr):
     
@@ -108,14 +109,14 @@ def ssl_train(epoch, net, trainloader, optimizer, criterion):
     return avgLoss / num_batches  
 
 count = 0
-def save_model():
+def save_model(epoch):
     global count, simclr
 
     
     if not os.path.isdir('ssl_centralized'):
         os.mkdir('ssl_centralized')
 
-    torch.save(simclr.state_dict(), f"./ssl_centralized/ssl_centralized_model_{count}.pth")
+    torch.save(simclr.state_dict(), f"./ssl_centralized/ssl_centralized_model_{epoch}.pth")
 
 if __name__ == "__main__":
     main(False)
