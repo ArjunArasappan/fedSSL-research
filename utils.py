@@ -4,7 +4,7 @@ from flwr_datasets import FederatedDataset
 from flwr_datasets.partitioner import IidPartitioner
 import torchvision.transforms as transforms
 
-
+import csv
 
 ssl_transform = SimCLRTransform()
 
@@ -46,17 +46,17 @@ def applySSLAugment(batch):
     batch["img"] = [ssl_transform(img, True) for img in batch["img"]]
     return batch
 
-def load_central_test():
-    fds = FederatedDataset(dataset="cifar10")
+# def load_central_test():
+#     fds = FederatedDataset(dataset="cifar10")
     
-    train_data = fds.load_split("train")
+#     train_data = fds.load_split("train")
 
-    train_data = train_data.with_transform(applyTrainTransform)
+#     train_data = train_data.with_transform(applyTrainTransform)
 
-    test_data = fds.load_split("test")
-    test_data = test_data.with_transform(applyTestTransform)
+#     test_data = fds.load_split("test")
+#     test_data = test_data.with_transform(applyTestTransform)
     
-    return train_data, test_data
+#     return train_data, test_data
 
 
 def load_data():
@@ -85,5 +85,10 @@ def load_augmented():
 
 def ssl_log(data):
     with open(log_path, 'a', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(data)
+        
+def sim_log(data):
+    with open('./sim_log.txt', 'a', newline='') as file:
         writer = csv.writer(file)
         writer.writerow(data)

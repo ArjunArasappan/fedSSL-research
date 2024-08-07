@@ -8,7 +8,7 @@ from model import SimCLR, SimCLRPredictor, NTXentLoss
 from flwr_datasets import FederatedDataset
 from flwr_datasets.partitioner import IidPartitioner
 import torchvision.transforms as transforms
-from eval import EvalMetric
+from eval_metric import EvalMetric
 import os
 
 import flwr as fl
@@ -19,11 +19,11 @@ simclr = None
 
 DEVICE = utils.DEVICE
 
-EPOCHS = 10
-SEGMENTS = 190
+EPOCHS = 100
+SEGMENTS = 20
 
 
-finetune_fraction = 0.1
+finetune_fraction = 0.3
 
 log_path = "./log.txt"
 
@@ -57,19 +57,24 @@ def ssl_simulation(trainset, testset, useResnet18, relative_eval):
     predictor_optimizer = torch.optim.Adam(simclr_predictor.parameters(), lr=3e-4)
 
     
-    ntxent = NTXentLoss(device=DEVICE).to(DEVICE)
+    ntxent = NTXentLoss(device=DEVICE)
     cross_entropy = nn.CrossEntropyLoss()
     
     
-    trainloader = DataLoader(trainset, batch_size = 256, shuffle = True)
-
+    trainloader = DataLoader(trainset, batch_size = 512, shuffle = True)
+    testloader = DataLoader(testset, batch_size = 512, shuffle = True)
     
     for epoch in range(EPOCHS * SEGMENTS):
-        train(simclr, trainloader, simclr_optimizer, ntxent)
-        similarities, mean, median = computeSimilarities(testset, simclr, relative_eval)
-        print(mean)
-        print(median)
+        
+        mean, median = computeSimilarities(testloader, simclr, relative_eval)
+
         supervised_train(simclr, simclr_predictor, trainloader, predictor_optimizer, cross_entropy)
+        loss, accuracy = supervised_test(simclr_predictor, testloader, cross_entropy)
+        
+        train(simclr, trainloader, simclr_optimizer, ntxent)
+        
+        utils.sim_log([SEGMENTS, epoch, mean.item(), median.item(), loss, accuracy])
+        
     
 
 def train(net, trainloader, optimizer, criterion):
@@ -92,24 +97,34 @@ def train(net, trainloader, optimizer, criterion):
         loss.backward()
         optimizer.step()
 
-        print(f"Client Train Batch: {batch} / {num_batches}")
+        print(f"Train Batch: {batch} / {num_batches}")
         batch += 1
         
         if batch >= num_batches / SEGMENTS:
             break
         
     
-def computeSimilarities(data, simclr, relative_eval):
+def computeSimilarities(testloader, simclr, relative_eval):
     
-    loader = DataLoader(data, batch_size = len(data))
     
-    for idx, item in enumerate(loader):
+    means, medians = [], []
+    batch = 0
+    for item in testloader:
         
-        batch = item['img']
+        x = item['img']
+        
+        x = x.to(DEVICE)
+        
         relative_eval.calcModelLatents(simclr)
-        similarities, mean, median = relative_eval.computeSimilarity(batch, simclr)
-        print(f"Relative Eval DONE: {mean}, {median}")
-        return similarities, mean, median
+        mean, median = relative_eval.computeSimilarity(x, simclr)
+        print(f"Computing sims {batch}/{len(testloader)}: {mean}, {median}")
+        means.append(mean)
+        medians.append(median)
+        batch += 1
+    mean, median = torch.mean(torch.Tensor(means)), torch.median(torch.Tensor(medians))
+    print(f"Relative Eval DONE: {mean}, {median}")
+
+    return mean, median
 
 def supervised_train(simclr, simclr_predictor, trainloader, optimizer, criterion):
     state_dict = simclr.state_dict()
@@ -122,7 +137,7 @@ def supervised_train(simclr, simclr_predictor, trainloader, optimizer, criterion
     
     num_batches = len(trainloader)
     
-    for , item in enumerate(trainloader):
+    for idx, item in enumerate(trainloader):
         (x, _, _), labels = item['img'], item['label']
         
         x, labels = x.to(DEVICE), labels.to(DEVICE)
@@ -138,7 +153,36 @@ def supervised_train(simclr, simclr_predictor, trainloader, optimizer, criterion
 
         print(f"Client Train Batch: {idx} / {num_batches}")
         if idx >= finetune_fraction * num_batches:
-            break        
+            break  
+        
+        
+def supervised_test(simclr_predictor, testloader, criterion):
+    simclr_predictor.eval()
+    
+    total = 0
+    correct = 0
+    loss = 0
+
+    batch = 0
+    num_batches = len(testloader)
+
+    with torch.no_grad():
+        for item in testloader:
+            x , labels = item['img'], item['label']
+            x, labels = x.to(DEVICE), labels.to(DEVICE)
+            
+            logits = simclr_predictor(x)
+            values, predicted = torch.max(logits, 1)  
+            
+            total += labels.size(0)
+            loss += criterion(logits, labels).item()
+            correct += (predicted == labels).sum().item()
+
+            print(f"Test Batch: {batch} / {num_batches}")
+            batch += 1
+  
+    return loss / batch, correct / total
+              
 
     
 

@@ -55,13 +55,17 @@ class MLP(nn.Module):
         return self.net(x)
 
 class SimCLR(nn.Module):
-    def __init__(self, device, useResnet18, image_size=32, projection_size=2048, projection_hidden_size=4096, num_layer = 2) -> None:
+    def __init__(self, device, useResnet18, image_size=32, projection_size=2048, projection_hidden_size=4096, num_layer = 2, pretrain = True) -> None:
         super(SimCLR, self).__init__()
         
         if useResnet18:
             self.encoder = resnet18(weights=ResNet18_Weights.IMAGENET1K_V1).to(device)
+            if not pretrain:
+                self.encoder = resnet18(weights = None)
         else:
             self.encoder = resnet50(weights=ResNet50_Weights.IMAGENET1K_V1).to(device)
+            if not pretrain:
+                self.encoder = resnet50(weights = None)
 
 
         self.encoded_size = self.encoder.fc.in_features
@@ -89,9 +93,9 @@ class SimCLRPredictor(nn.Module):
         self.simclr = SimCLR(device, useResnet18 = useResnet18).to(device)
         
         if linear_predictor:
-            self.linear_predictor = nn.Linear(self.simclr.encoded_size, num_classes)
+            self.predictor = nn.Linear(self.simclr.encoded_size, num_classes)
         else:
-            self.linear_predictor = MLP(self.simclr.encoded_size, num_classes, self.simclr.encoded_size)
+            self.predictor = MLP(self.simclr.encoded_size, num_classes, self.simclr.encoded_size)
         
         self.simclr.setInference(True)
         
@@ -116,6 +120,6 @@ class SimCLRPredictor(nn.Module):
     def forward(self, x):
         self.simclr.setInference(True)
         features = self.simclr(x)
-        output = self.linear_predictor(features)
+        output = self.predictor(features)
         return output
     
