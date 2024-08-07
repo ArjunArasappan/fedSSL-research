@@ -3,7 +3,7 @@ from collections import OrderedDict
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torchvision.models import resnet18, ResNet18_Weights, resnet50, ResNet50_Weights
+from torchvision.models import resnet18, resnet50
 
 import utils
 
@@ -55,17 +55,13 @@ class MLP(nn.Module):
         return self.net(x)
 
 class SimCLR(nn.Module):
-    def __init__(self, device, useResnet18, image_size=32, projection_size=2048, projection_hidden_size=4096, num_layer = 2, pretrain = True) -> None:
+    def __init__(self, device, useResnet18, image_size=32, projection_size=2048, projection_hidden_size=4096, num_layer = 2) -> None:
         super(SimCLR, self).__init__()
         
         if useResnet18:
-            self.encoder = resnet18(weights=ResNet18_Weights.IMAGENET1K_V1).to(device)
-            if not pretrain:
-                self.encoder = resnet18(weights = None)
+            self.encoder = resnet18(weights = None)
         else:
-            self.encoder = resnet50(weights=ResNet50_Weights.IMAGENET1K_V1).to(device)
-            if not pretrain:
-                self.encoder = resnet50(weights = None)
+            self.encoder = resnet50(weights = None)
 
 
         self.encoded_size = self.encoder.fc.in_features
