@@ -19,8 +19,8 @@ simclr = None
 
 DEVICE = utils.DEVICE
 
-EPOCHS = 100
-SEGMENTS = 20
+EPOCHS = 200
+SEGMENTS = 2
 
 
 finetune_fraction = 0.3
