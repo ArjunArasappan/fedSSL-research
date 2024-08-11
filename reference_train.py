@@ -45,6 +45,10 @@ def main(useResnet18):
     # epochLoad = load_model(simclr)
     epochLoad = 0
     simclr_optimizer = optim.SGD(simclr.parameters(), lr=0.3 * (512 / 256), momentum=0.9, weight_decay=1e-6)
+    
+    warmup_epochs = 10
+    warmup_scheduler = optim.lr_scheduler.LinearLR(optimizer, start_factor=0.0, total_iters=warmup_epochs)
+
 
 
     predictor_optimizer = torch.optim.Adam(simclr_predictor.parameters(), lr=3e-4)
