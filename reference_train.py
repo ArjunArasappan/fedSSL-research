@@ -42,7 +42,10 @@ def main(useResnet18):
     simclr = SimCLR(DEVICE, useResnet18=useResnet18).to(DEVICE)
     simclr_predictor = SimCLRPredictor(10, DEVICE, useResnet18=useResnet18, tune_encoder = False, linear_predictor = useLinearPred).to(DEVICE)
 
-    simclr_optimizer = torch.optim.Adam(simclr.parameters(), lr=3e-4)
+    epochLoad = load_model(simclr)
+
+    simclr_optimizer = optim.SGD(simclr.parameters(), lr=0.075 * (512 ** 0.5), momentum=0.9, weight_decay=0.0005)
+
     predictor_optimizer = torch.optim.Adam(simclr_predictor.parameters(), lr=3e-4)
 
     
@@ -59,17 +62,19 @@ def main(useResnet18):
     testloader = DataLoader(testset, batch_size = 256, shuffle = True)
     print('cuh')
     
-    for epoch in range(EPOCHS):
-        ssl_train(epoch, simclr, trainloader, simclr_optimizer, ntxent)
+    for epoch in range(epochLoad + 1, EPOCHS):
+        avgLoss = ssl_train(epoch, simclr, trainloader, simclr_optimizer, ntxent)
         if epoch > 100 and epoch % 5 == 0:
             save_model(epoch)
+            
+        utils.ssl_log([epoch, avgLoss], './log.txt')
         
 def load_model(simclr):
     
     list_of_files = [fname for fname in glob.glob("./ssl_centralized/ssl_centralized_model_*.pth")]
     latest_round_file = max(list_of_files, key=os.path.getctime)
     print("Loading pre-trained model from:", latest_round_file)
-    count = latest_round_file.split('_')[3].split('.')[0]
+    count = latest_round_file.split('_')[4].split('.')[0]
     
     state_dict = torch.load(latest_round_file)
     
@@ -113,8 +118,8 @@ def save_model(epoch):
     global count, simclr
 
     
-    if not os.path.isdir('ssl_centralized'):
-        os.mkdir('ssl_centralized')
+    if not os.path.isdir('./ssl_centralized'):
+        os.mkdir('./ssl_centralized')
 
     torch.save(simclr.state_dict(), f"./ssl_centralized/ssl_centralized_model_{epoch}.pth")
 
