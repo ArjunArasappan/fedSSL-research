@@ -1,3 +1,7 @@
 ./ssl_centralized/ssl_centralized_model_42.pth
 ./ssl_centralized/ssl_centralized_model_42.pth
 ./ssl_centralized/ssl_centralized_model_42.pth,0.946300819516182,0.6964
+./ssl_centralized/ssl_centralized_model_130.pth
+./ssl_centralized/ssl_centralized_model_130.pth,1.4715369939804077,0.4765
+./ssl_centralized/ssl_centralized_model_545.pth
+./ssl_centralized/ssl_centralized_model_545.pth,1.0803255081176757,0.622
