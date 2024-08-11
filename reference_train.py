@@ -42,9 +42,10 @@ def main(useResnet18):
     simclr = SimCLR(DEVICE, useResnet18=useResnet18).to(DEVICE)
     simclr_predictor = SimCLRPredictor(10, DEVICE, useResnet18=useResnet18, tune_encoder = False, linear_predictor = useLinearPred).to(DEVICE)
 
-    epochLoad = load_model(simclr)
+    # epochLoad = load_model(simclr)
+    epochLoad = 0
+    simclr_optimizer = optim.SGD(simclr.parameters(), lr=0.3 * (512 / 256), momentum=0.9, weight_decay=1e-6)
 
-    simclr_optimizer = optim.SGD(simclr.parameters(), lr=0.075 * (512 ** 0.5), momentum=0.9, weight_decay=0.0005)
 
     predictor_optimizer = torch.optim.Adam(simclr_predictor.parameters(), lr=3e-4)
 
@@ -121,7 +122,7 @@ def save_model(epoch):
     if not os.path.isdir('./ssl_centralized'):
         os.mkdir('./ssl_centralized')
 
-    torch.save(simclr.state_dict(), f"./ssl_centralized/ssl_centralized_model_{epoch}.pth")
+    torch.save(simclr.state_dict(), f"./ssl_centralized/ssl_centralized_model_new_{epoch}.pth")
 
 if __name__ == "__main__":
     main(False)
