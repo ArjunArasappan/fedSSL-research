@@ -19,7 +19,7 @@ simclr = None
 
 DEVICE = utils.DEVICE
 
-EPOCHS = 1000
+EPOCHS = 1500
 
 finetune_fraction = 0.1
 
@@ -42,12 +42,12 @@ def main(useResnet18):
     simclr = SimCLR(DEVICE, useResnet18=useResnet18).to(DEVICE)
     simclr_predictor = SimCLRPredictor(10, DEVICE, useResnet18=useResnet18, tune_encoder = False, linear_predictor = useLinearPred).to(DEVICE)
 
-    # epochLoad = load_model(simclr)
-    epochLoad = 0
+    epochLoad = load_model(simclr)
+    # epochLoad = 0
     simclr_optimizer = optim.SGD(simclr.parameters(), lr=0.3 * (512 / 256), momentum=0.9, weight_decay=1e-6)
     
-    warmup_epochs = 10
-    warmup_scheduler = optim.lr_scheduler.LinearLR(optimizer, start_factor=0.0, total_iters=warmup_epochs)
+    # warmup_scheduler = optim.lr_scheduler.CosineAnnealingLR(simclr_optimizer, T_max = EPOCHS)
+    cosine_scheduler = optim.lr_scheduler.CosineAnnealingLR(simclr_optimizer, T_max = EPOCHS)
 
 
 
@@ -71,15 +71,17 @@ def main(useResnet18):
         avgLoss = ssl_train(epoch, simclr, trainloader, simclr_optimizer, ntxent)
         if epoch > 100 and epoch % 5 == 0:
             save_model(epoch)
-            
+
         utils.ssl_log([epoch, avgLoss], './log.txt')
+        
+        cosine_scheduler.step()
         
 def load_model(simclr):
     
     list_of_files = [fname for fname in glob.glob("./ssl_centralized/ssl_centralized_model_*.pth")]
     latest_round_file = max(list_of_files, key=os.path.getctime)
     print("Loading pre-trained model from:", latest_round_file)
-    count = latest_round_file.split('_')[4].split('.')[0]
+    count = latest_round_file.split('_')[5].split('.')[0]
     
     state_dict = torch.load(latest_round_file)
     
@@ -126,7 +128,7 @@ def save_model(epoch):
     if not os.path.isdir('./ssl_centralized'):
         os.mkdir('./ssl_centralized')
 
-    torch.save(simclr.state_dict(), f"./ssl_centralized/ssl_centralized_model_new_{epoch}.pth")
+    torch.save(simclr.state_dict(), f"./ssl_centralized/ssl_centralized_model_csa_{epoch}.pth")
 
 if __name__ == "__main__":
     main(False)

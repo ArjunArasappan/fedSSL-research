@@ -9,3 +9,12 @@
 ./ssl_centralized/ssl_centralized_model_810.pth
 ./ssl_centralized/ssl_centralized_model_605.pth
 ./ssl_centralized/ssl_centralized_model_605.pth,1.0533510625362397,0.6309
+./ssl_centralized/ssl_centralized_model_605.pth
+./ssl_centralized/ssl_centralized_model_csa_310.pth
+./ssl_centralized/ssl_centralized_model_csa_310.pth,1.0816843301057815,0.615
+./ssl_centralized/ssl_centralized_model_csa_680.pth
+./ssl_centralized/ssl_centralized_model_csa_680.pth,0.8987774729728699,0.6917
+./ssl_centralized/ssl_centralized_model_csa_695.pth
+./ssl_centralized/ssl_centralized_model_csa_695.pth,0.8958531856536865,0.6901
+./ssl_centralized/ssl_centralized_model_csa_995.pth
+./ssl_centralized/ssl_centralized_model_csa_995.pth,0.8677945286035538,0.7035

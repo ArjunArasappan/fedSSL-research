@@ -43,7 +43,7 @@ def applyTestTransform(batch):
     return batch
 
 def applySSLAugment(batch):
-    batch["img"] = [ssl_transform(img, True) for img in batch["img"]]
+    batch["img"] = [ssl_transform(img) for img in batch["img"]]
     return batch
 
 # def load_central_test():
