@@ -15,7 +15,7 @@ class SimCLRTransform:
         color_jitter = transforms.ColorJitter(0.8 * s, 0.8 * s, 0.8 * s, 0.2 * s)
         self.size = size
 
-        self.augment_tranaform = [
+        self.augment_transform = [
             transforms.RandomResizedCrop(size=size),
             transforms.RandomHorizontalFlip(),
             transforms.RandomApply([color_jitter], p=0.8),
@@ -26,7 +26,7 @@ class SimCLRTransform:
             self.augment_transform.append(torchvision.transforms.GaussianBlur(int(0.1 * size), sigma = random.uniform(0.1, 2)))
 
                 
-        self.augment_tranaform.append(transforms.ToTensor())
+        self.augment_transform.append(transforms.ToTensor())
 
     def __call__(self, x):
 

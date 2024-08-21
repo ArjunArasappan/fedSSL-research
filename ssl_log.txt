@@ -5,3 +5,17 @@
 ./ssl_centralized/ssl_centralized_model_130.pth,1.4715369939804077,0.4765
 ./ssl_centralized/ssl_centralized_model_545.pth
 ./ssl_centralized/ssl_centralized_model_545.pth,1.0803255081176757,0.622
+./ssl_centralized/ssl_centralized_model_csa_995.pth
+./ssl_centralized/ssl_centralized_model_csa_995.pth,0.8644079744815827,0.7069
+./ssl_centralized/ssl_centralized_model_csa_995.pth
+./ssl_centralized/ssl_centralized_model_csa_995.pth,0.8629454582929611,0.703
+./ssl_centralized/ssl_centralized_model_csa_995.pth
+./ssl_centralized/checkpoint_round_1000.pth
+./ssl_centralized/checkpoint_round_1000.pth,0.9682578533887863,0.6635
+/root/fedSSL-research/ssl_centralized/checkpoint_round_1000.pth
+/root/fedSSL-research/ssl_centralized/checkpoint_round_1000.pth,0.8886115431785584,0.6929
+/root/fedSSL-research/ssl_centralized/checkpoint_round_1000.pth
+/root/fedSSL-research/ssl_centralized/ssl_centralized_model_csa_995.pth
+/root/fedSSL-research/ssl_centralized/checkpoint_round_1000.pth,0.852805894613266,0.7061
+/root/fedSSL-research/ssl_centralized/ssl_centralized_model_csa_995.pth,0.7738475531339646,0.7373
+./ssl_centralized/checkpoint_round_900.pth

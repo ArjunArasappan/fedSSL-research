@@ -19,7 +19,7 @@ simclr = None
 
 DEVICE = utils.DEVICE
 
-EPOCHS = 1000
+EPOCHS = 2000
 
 finetune_fraction = 0.1
 

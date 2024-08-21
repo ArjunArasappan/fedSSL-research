@@ -10,7 +10,7 @@ ssl_transform = SimCLRTransform()
 
 NUM_CLASSES = 10
 useResnet18 = False
-fineTuneEncoder = True
+fineTuneEncoder = False
 DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 log_path = './ssl_log.txt'
