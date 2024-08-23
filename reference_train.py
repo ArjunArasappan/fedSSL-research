@@ -25,7 +25,6 @@ finetune_fraction = 0.1
 
 log_path = "./log.txt"
 
-useLinearPred = False
 
 
 
@@ -40,11 +39,11 @@ def main(useResnet18):
         
     
     simclr = SimCLR(DEVICE, useResnet18=useResnet18).to(DEVICE)
-    simclr_predictor = SimCLRPredictor(10, DEVICE, useResnet18=useResnet18, tune_encoder = False, linear_predictor = useLinearPred).to(DEVICE)
+    simclr_predictor = SimCLRPredictor(10, DEVICE, useResnet18=useResnet18, tune_encoder = False).to(DEVICE)
 
     epochLoad = load_model(simclr)
     # epochLoad = 0
-    simclr_optimizer = optim.SGD(simclr.parameters(), lr=0.3 * (512 / 256), momentum=0.9, weight_decay=1e-6)
+    simclr_optimizer = optim.SGD(simclr.parameters(), lr=0.01, momentum=0.9, weight_decay=1e-6)
     
     # warmup_scheduler = optim.lr_scheduler.CosineAnnealingLR(simclr_optimizer, T_max = EPOCHS)
     cosine_scheduler = optim.lr_scheduler.CosineAnnealingLR(simclr_optimizer, T_max = EPOCHS)

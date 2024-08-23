@@ -26,7 +26,7 @@ class EvalMetric:
         
     def load_reference(self):
         
-        state_dict = torch.load("./ssl_centralized/ssl_centralized_model_42.pth")
+        state_dict = torch.load("/root/fedSSL-research/ssl_centralized/checkpoint_round_1000.pth")
         self.reference_model.load_state_dict(state_dict, strict = True)
     
     def selectAnchors(self):

@@ -19,15 +19,16 @@ simclr = None
 
 DEVICE = utils.DEVICE
 
-EPOCHS = 200
-SEGMENTS = 2
+EPOCHS = 1000
+SEGMENTS = 1
+fine_tune_epochs = 10
 
 
 finetune_fraction = 0.3
 
 log_path = "./log.txt"
 
-useLinearPred = False
+useLinearPred = True
 
 
 
@@ -136,25 +137,23 @@ def supervised_train(simclr, simclr_predictor, trainloader, optimizer, criterion
     
     
     num_batches = len(trainloader)
-    
-    for idx, item in enumerate(trainloader):
-        (x, _, _), labels = item['img'], item['label']
-        
-        x, labels = x.to(DEVICE), labels.to(DEVICE)
-        
-        optimizer.zero_grad()
-        
-        z = simclr_predictor(x)
-    
-        loss = criterion(z, labels)
 
-        loss.backward()
-        optimizer.step()
-
-        print(f"Client Train Batch: {idx} / {num_batches}")
-        if idx >= finetune_fraction * num_batches:
-            break  
+    for i in range(fine_tune_epochs):    
+        for idx, item in enumerate(trainloader):
+            (x, _, _), labels = item['img'], item['label']
+            
+            x, labels = x.to(DEVICE), labels.to(DEVICE)
+            
+            optimizer.zero_grad()
+            
+            z = simclr_predictor(x)
         
+            loss = criterion(z, labels)
+
+            loss.backward()
+            optimizer.step()
+
+            print(f"Client Train Batch: {idx} / {num_batches}")
         
 def supervised_test(simclr_predictor, testloader, criterion):
     simclr_predictor.eval()
