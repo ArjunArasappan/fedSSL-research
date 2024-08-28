@@ -21,7 +21,7 @@ DEVICE = utils.DEVICE
 
 EPOCHS = 1000
 SEGMENTS = 1
-fine_tune_epochs = 10
+fine_tune_epochs = 3
 
 
 finetune_fraction = 0.3
@@ -175,8 +175,10 @@ def supervised_test(simclr_predictor, testloader, criterion):
             
             total += labels.size(0)
             loss += criterion(logits, labels).item()
+            
             correct += (predicted == labels).sum().item()
-
+            if batch >= num_batches / 2:
+                break
             print(f"Test Batch: {batch} / {num_batches}")
             batch += 1
   
