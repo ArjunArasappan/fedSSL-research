@@ -34,3 +34,8 @@
 ./ssl_centralized/ssl_centralized_model_csa_1915.pth,0.7435228705406189,0.7448
 ./ssl_centralized/ssl_centralized_model_csa_1995.pth
 ./ssl_centralized/ssl_centralized_model_csa_1995.pth,0.7512463182210922,0.7425
+./ssl_centralized/checkpoint_round_1000.pth
+./ssl_centralized/checkpoint_round_1000.pth,0.8284768283367157,0.7135
+./ssl_centralized/checkpoint_round_1000.pth
+./ssl_centralized/ssl_centralized_model_csa_1225.pth
+./ssl_centralized/ssl_centralized_model_csa_1225.pth,0.7755034834146499,0.7325

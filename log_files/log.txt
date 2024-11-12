@@ -3054,3 +3054,201 @@
 1997,5.395727658758358
 1998,5.397473860760124
 1999,5.3960893786683375
+debug | INFO flwr 2024-11-11 20:08:34,280 | app.py:193 | Starting Flower simulation, config: num_rounds=1000, no round_timeout
+debug | INFO flwr 2024-11-11 20:08:37,276 | app.py:228 | Flower VCE: Ray initialized with resources: {'memory': 8368399975.0, 'node:127.0.0.1': 1.0, 'object_store_memory': 2147483648.0, 'CPU': 8.0, 'node:__internal_head__': 1.0}
+debug | INFO flwr 2024-11-11 20:08:37,276 | app.py:234 | Optimize your simulation with Flower VCE: https://flower.ai/docs/framework/how-to-run-simulations.html
+debug | INFO flwr 2024-11-11 20:08:37,276 | app.py:257 | Flower VCE: Resources for each Virtual Client: {'num_cpus': 2, 'num_gpus': 0.2}
+debug | WARNING flwr 2024-11-11 20:08:37,280 | ray_actor.py:124 | The ActorPool is empty. The system (CPUs=8.0, GPUs=0) does not meet the criteria to host at least one client with resources: {'num_cpus': 2, 'num_gpus': 0.2}. Lowering the `client_resources` could help.
+debug | INFO flwr 2024-11-11 20:09:49,837 | app.py:193 | Starting Flower simulation, config: num_rounds=1000, no round_timeout
+debug | INFO flwr 2024-11-11 20:09:53,291 | app.py:228 | Flower VCE: Ray initialized with resources: {'memory': 8146419712.0, 'node:127.0.0.1': 1.0, 'CPU': 8.0, 'node:__internal_head__': 1.0, 'object_store_memory': 2147483648.0}
+debug | INFO flwr 2024-11-11 20:09:53,292 | app.py:234 | Optimize your simulation with Flower VCE: https://flower.ai/docs/framework/how-to-run-simulations.html
+debug | INFO flwr 2024-11-11 20:09:53,292 | app.py:257 | Flower VCE: Resources for each Virtual Client: {'num_cpus': 2, 'num_gpus': 0}
+debug | INFO flwr 2024-11-11 20:09:53,312 | app.py:303 | Flower VCE: Creating VirtualClientEngineActorPool with 4 actors
+debug | INFO flwr 2024-11-11 20:09:53,312 | server.py:92 | [INIT]
+debug | INFO flwr 2024-11-11 20:09:53,312 | server.py:279 | Requesting initial parameters from one random client
+debug | INFO flwr 2024-11-11 20:09:57,454 | server.py:286 | Received initial parameters from one random client
+debug | INFO flwr 2024-11-11 20:09:57,454 | server.py:94 | Evaluating initial global parameters
+debug | INFO flwr 2024-11-11 20:09:57,455 | server.py:110 | 
+debug | INFO flwr 2024-11-11 20:09:57,455 | server.py:111 | [ROUND 1]
+debug | INFO flwr 2024-11-11 20:09:57,455 | server.py:224 | configure_fit: strategy sampled 5 clients (out of 5)
+debug | INFO flwr 2024-11-11 20:14:47,573 | app.py:193 | Starting Flower simulation, config: num_rounds=1000, no round_timeout
+debug | INFO flwr 2024-11-11 20:14:49,883 | app.py:228 | Flower VCE: Ray initialized with resources: {'memory': 5363777536.0, 'object_store_memory': 2147483648.0, 'node:__internal_head__': 1.0, 'node:127.0.0.1': 1.0, 'CPU': 8.0}
+debug | INFO flwr 2024-11-11 20:14:49,883 | app.py:234 | Optimize your simulation with Flower VCE: https://flower.ai/docs/framework/how-to-run-simulations.html
+debug | INFO flwr 2024-11-11 20:14:49,884 | app.py:257 | Flower VCE: Resources for each Virtual Client: {'num_cpus': 2, 'num_gpus': 0}
+debug | INFO flwr 2024-11-11 20:14:49,895 | app.py:303 | Flower VCE: Creating VirtualClientEngineActorPool with 4 actors
+debug | INFO flwr 2024-11-11 20:14:49,895 | server.py:92 | [INIT]
+debug | INFO flwr 2024-11-11 20:14:49,895 | server.py:279 | Requesting initial parameters from one random client
+debug | INFO flwr 2024-11-11 20:14:53,816 | server.py:286 | Received initial parameters from one random client
+debug | INFO flwr 2024-11-11 20:14:53,816 | server.py:94 | Evaluating initial global parameters
+debug | INFO flwr 2024-11-11 20:14:53,817 | server.py:110 | 
+debug | INFO flwr 2024-11-11 20:14:53,817 | server.py:111 | [ROUND 1]
+debug | INFO flwr 2024-11-11 20:14:53,817 | server.py:224 | configure_fit: strategy sampled 5 clients (out of 5)
+debug | INFO flwr 2024-11-11 20:16:09,788 | app.py:193 | Starting Flower simulation, config: num_rounds=1000, no round_timeout
+debug | INFO flwr 2024-11-11 20:16:12,877 | app.py:228 | Flower VCE: Ray initialized with resources: {'CPU': 8.0, 'node:127.0.0.1': 1.0, 'node:__internal_head__': 1.0, 'object_store_memory': 2147483648.0, 'memory': 8338864538.0}
+debug | INFO flwr 2024-11-11 20:16:12,878 | app.py:234 | Optimize your simulation with Flower VCE: https://flower.ai/docs/framework/how-to-run-simulations.html
+debug | INFO flwr 2024-11-11 20:16:12,878 | app.py:257 | Flower VCE: Resources for each Virtual Client: {'num_cpus': 2, 'num_gpus': 0}
+debug | INFO flwr 2024-11-11 20:16:12,887 | app.py:303 | Flower VCE: Creating VirtualClientEngineActorPool with 4 actors
+debug | INFO flwr 2024-11-11 20:16:12,888 | server.py:92 | [INIT]
+debug | INFO flwr 2024-11-11 20:16:12,888 | server.py:279 | Requesting initial parameters from one random client
+debug | ERROR flwr 2024-11-11 20:16:15,579 | ray_client_proxy.py:85 | Traceback (most recent call last):
+  File "/Users/arjunarasappan/Documents/Flower 2024 Internship/fedSSL-research/venv/lib/python3.10/site-packages/flwr/simulation/ray_transport/ray_client_proxy.py", line 73, in _submit_job
+    out_mssg, updated_context = self.actor_pool.get_client_result(
+  File "/Users/arjunarasappan/Documents/Flower 2024 Internship/fedSSL-research/venv/lib/python3.10/site-packages/flwr/simulation/ray_transport/ray_actor.py", line 399, in get_client_result
+    return self._fetch_future_result(cid)
+  File "/Users/arjunarasappan/Documents/Flower 2024 Internship/fedSSL-research/venv/lib/python3.10/site-packages/flwr/simulation/ray_transport/ray_actor.py", line 280, in _fetch_future_result
+    res_cid, out_mssg, updated_context = ray.get(
+  File "/Users/arjunarasappan/Documents/Flower 2024 Internship/fedSSL-research/venv/lib/python3.10/site-packages/ray/_private/auto_init_hook.py", line 21, in auto_init_wrapper
+    return fn(*args, **kwargs)
+  File "/Users/arjunarasappan/Documents/Flower 2024 Internship/fedSSL-research/venv/lib/python3.10/site-packages/ray/_private/client_mode_hook.py", line 103, in wrapper
+    return func(*args, **kwargs)
+  File "/Users/arjunarasappan/Documents/Flower 2024 Internship/fedSSL-research/venv/lib/python3.10/site-packages/ray/_private/worker.py", line 2667, in get
+    values, debugger_breakpoint = worker.get_objects(object_refs, timeout=timeout)
+  File "/Users/arjunarasappan/Documents/Flower 2024 Internship/fedSSL-research/venv/lib/python3.10/site-packages/ray/_private/worker.py", line 864, in get_objects
+    raise value.as_instanceof_cause()
+ray.exceptions.RayTaskError(ClientAppException): [36mray::ClientAppActor.run()[39m (pid=11839, ip=127.0.0.1, actor_id=3290868afb3c564f46f2fc1701000000, repr=<flwr.simulation.ray_transport.ray_actor.ClientAppActor object at 0x107fa1b10>)
+  File "/Users/arjunarasappan/Documents/Flower 2024 Internship/fedSSL-research/venv/lib/python3.10/site-packages/flwr/client/client_app.py", line 98, in __call__
+    return self._call(message, context)
+  File "/Users/arjunarasappan/Documents/Flower 2024 Internship/fedSSL-research/venv/lib/python3.10/site-packages/flwr/client/client_app.py", line 81, in ffn
+    out_message = handle_legacy_message_from_msgtype(
+  File "/Users/arjunarasappan/Documents/Flower 2024 Internship/fedSSL-research/venv/lib/python3.10/site-packages/flwr/client/message_handler/message_handler.py", line 96, in handle_legacy_message_from_msgtype
+    client = client_fn(str(message.metadata.partition_id))
+  File "/Users/arjunarasappan/Documents/Flower 2024 Internship/fedSSL-research/client.py", line 139, in client_fn
+    train, test = utils.load_partition(fds, clientID, client_test_split = 0)
+  File "/Users/arjunarasappan/Documents/Flower 2024 Internship/fedSSL-research/utils.py", line 53, in load_partition
+    partition = fds.load_partition(partition_id, "train")
+  File "/Users/arjunarasappan/Documents/Flower 2024 Internship/fedSSL-research/venv/lib/python3.10/site-packages/flwr_datasets/federated_dataset.py", line 169, in load_partition
+    partition = partitioner.load_partition(partition_id)
+  File "/Users/arjunarasappan/Documents/Flower 2024 Internship/fedSSL-research/partitioner.py", line 68, in load_partition
+    return shuffled_dataset.select(range(start_idx, end_idx))
+UnboundLocalError: local variable 'shuffled_dataset' referenced before assignment
+
+The above exception was the direct cause of the following exception:
+
+[36mray::ClientAppActor.run()[39m (pid=11839, ip=127.0.0.1, actor_id=3290868afb3c564f46f2fc1701000000, repr=<flwr.simulation.ray_transport.ray_actor.ClientAppActor object at 0x107fa1b10>)
+  File "/Users/arjunarasappan/Documents/Flower 2024 Internship/fedSSL-research/venv/lib/python3.10/site-packages/flwr/simulation/ray_transport/ray_actor.py", line 64, in run
+    raise ClientAppException(str(ex)) from ex
+flwr.client.client_app.ClientAppException: 
+Exception ClientAppException occurred. Message: local variable 'shuffled_dataset' referenced before assignment
+
+debug | ERROR flwr 2024-11-11 20:16:15,579 | ray_client_proxy.py:86 | [36mray::ClientAppActor.run()[39m (pid=11839, ip=127.0.0.1, actor_id=3290868afb3c564f46f2fc1701000000, repr=<flwr.simulation.ray_transport.ray_actor.ClientAppActor object at 0x107fa1b10>)
+  File "/Users/arjunarasappan/Documents/Flower 2024 Internship/fedSSL-research/venv/lib/python3.10/site-packages/flwr/client/client_app.py", line 98, in __call__
+    return self._call(message, context)
+  File "/Users/arjunarasappan/Documents/Flower 2024 Internship/fedSSL-research/venv/lib/python3.10/site-packages/flwr/client/client_app.py", line 81, in ffn
+    out_message = handle_legacy_message_from_msgtype(
+  File "/Users/arjunarasappan/Documents/Flower 2024 Internship/fedSSL-research/venv/lib/python3.10/site-packages/flwr/client/message_handler/message_handler.py", line 96, in handle_legacy_message_from_msgtype
+    client = client_fn(str(message.metadata.partition_id))
+  File "/Users/arjunarasappan/Documents/Flower 2024 Internship/fedSSL-research/client.py", line 139, in client_fn
+    train, test = utils.load_partition(fds, clientID, client_test_split = 0)
+  File "/Users/arjunarasappan/Documents/Flower 2024 Internship/fedSSL-research/utils.py", line 53, in load_partition
+    partition = fds.load_partition(partition_id, "train")
+  File "/Users/arjunarasappan/Documents/Flower 2024 Internship/fedSSL-research/venv/lib/python3.10/site-packages/flwr_datasets/federated_dataset.py", line 169, in load_partition
+    partition = partitioner.load_partition(partition_id)
+  File "/Users/arjunarasappan/Documents/Flower 2024 Internship/fedSSL-research/partitioner.py", line 68, in load_partition
+    return shuffled_dataset.select(range(start_idx, end_idx))
+UnboundLocalError: local variable 'shuffled_dataset' referenced before assignment
+
+The above exception was the direct cause of the following exception:
+
+[36mray::ClientAppActor.run()[39m (pid=11839, ip=127.0.0.1, actor_id=3290868afb3c564f46f2fc1701000000, repr=<flwr.simulation.ray_transport.ray_actor.ClientAppActor object at 0x107fa1b10>)
+  File "/Users/arjunarasappan/Documents/Flower 2024 Internship/fedSSL-research/venv/lib/python3.10/site-packages/flwr/simulation/ray_transport/ray_actor.py", line 64, in run
+    raise ClientAppException(str(ex)) from ex
+flwr.client.client_app.ClientAppException: 
+Exception ClientAppException occurred. Message: local variable 'shuffled_dataset' referenced before assignment
+debug | ERROR flwr 2024-11-11 20:16:15,582 | app.py:328 | [36mray::ClientAppActor.run()[39m (pid=11839, ip=127.0.0.1, actor_id=3290868afb3c564f46f2fc1701000000, repr=<flwr.simulation.ray_transport.ray_actor.ClientAppActor object at 0x107fa1b10>)
+  File "/Users/arjunarasappan/Documents/Flower 2024 Internship/fedSSL-research/venv/lib/python3.10/site-packages/flwr/client/client_app.py", line 98, in __call__
+    return self._call(message, context)
+  File "/Users/arjunarasappan/Documents/Flower 2024 Internship/fedSSL-research/venv/lib/python3.10/site-packages/flwr/client/client_app.py", line 81, in ffn
+    out_message = handle_legacy_message_from_msgtype(
+  File "/Users/arjunarasappan/Documents/Flower 2024 Internship/fedSSL-research/venv/lib/python3.10/site-packages/flwr/client/message_handler/message_handler.py", line 96, in handle_legacy_message_from_msgtype
+    client = client_fn(str(message.metadata.partition_id))
+  File "/Users/arjunarasappan/Documents/Flower 2024 Internship/fedSSL-research/client.py", line 139, in client_fn
+    train, test = utils.load_partition(fds, clientID, client_test_split = 0)
+  File "/Users/arjunarasappan/Documents/Flower 2024 Internship/fedSSL-research/utils.py", line 53, in load_partition
+    partition = fds.load_partition(partition_id, "train")
+  File "/Users/arjunarasappan/Documents/Flower 2024 Internship/fedSSL-research/venv/lib/python3.10/site-packages/flwr_datasets/federated_dataset.py", line 169, in load_partition
+    partition = partitioner.load_partition(partition_id)
+  File "/Users/arjunarasappan/Documents/Flower 2024 Internship/fedSSL-research/partitioner.py", line 68, in load_partition
+    return shuffled_dataset.select(range(start_idx, end_idx))
+UnboundLocalError: local variable 'shuffled_dataset' referenced before assignment
+
+The above exception was the direct cause of the following exception:
+
+[36mray::ClientAppActor.run()[39m (pid=11839, ip=127.0.0.1, actor_id=3290868afb3c564f46f2fc1701000000, repr=<flwr.simulation.ray_transport.ray_actor.ClientAppActor object at 0x107fa1b10>)
+  File "/Users/arjunarasappan/Documents/Flower 2024 Internship/fedSSL-research/venv/lib/python3.10/site-packages/flwr/simulation/ray_transport/ray_actor.py", line 64, in run
+    raise ClientAppException(str(ex)) from ex
+flwr.client.client_app.ClientAppException: 
+Exception ClientAppException occurred. Message: local variable 'shuffled_dataset' referenced before assignment
+debug | ERROR flwr 2024-11-11 20:16:15,583 | app.py:329 | Traceback (most recent call last):
+  File "/Users/arjunarasappan/Documents/Flower 2024 Internship/fedSSL-research/venv/lib/python3.10/site-packages/flwr/simulation/app.py", line 323, in start_simulation
+    hist = run_fl(
+  File "/Users/arjunarasappan/Documents/Flower 2024 Internship/fedSSL-research/venv/lib/python3.10/site-packages/flwr/server/server.py", line 490, in run_fl
+    hist, elapsed_time = server.fit(
+  File "/Users/arjunarasappan/Documents/Flower 2024 Internship/fedSSL-research/venv/lib/python3.10/site-packages/flwr/server/server.py", line 93, in fit
+    self.parameters = self._get_initial_parameters(server_round=0, timeout=timeout)
+  File "/Users/arjunarasappan/Documents/Flower 2024 Internship/fedSSL-research/venv/lib/python3.10/site-packages/flwr/server/server.py", line 282, in _get_initial_parameters
+    get_parameters_res = random_client.get_parameters(
+  File "/Users/arjunarasappan/Documents/Flower 2024 Internship/fedSSL-research/venv/lib/python3.10/site-packages/flwr/simulation/ray_transport/ray_client_proxy.py", line 148, in get_parameters
+    message_out = self._submit_job(message, timeout)
+  File "/Users/arjunarasappan/Documents/Flower 2024 Internship/fedSSL-research/venv/lib/python3.10/site-packages/flwr/simulation/ray_transport/ray_client_proxy.py", line 87, in _submit_job
+    raise ex
+  File "/Users/arjunarasappan/Documents/Flower 2024 Internship/fedSSL-research/venv/lib/python3.10/site-packages/flwr/simulation/ray_transport/ray_client_proxy.py", line 73, in _submit_job
+    out_mssg, updated_context = self.actor_pool.get_client_result(
+  File "/Users/arjunarasappan/Documents/Flower 2024 Internship/fedSSL-research/venv/lib/python3.10/site-packages/flwr/simulation/ray_transport/ray_actor.py", line 399, in get_client_result
+    return self._fetch_future_result(cid)
+  File "/Users/arjunarasappan/Documents/Flower 2024 Internship/fedSSL-research/venv/lib/python3.10/site-packages/flwr/simulation/ray_transport/ray_actor.py", line 280, in _fetch_future_result
+    res_cid, out_mssg, updated_context = ray.get(
+  File "/Users/arjunarasappan/Documents/Flower 2024 Internship/fedSSL-research/venv/lib/python3.10/site-packages/ray/_private/auto_init_hook.py", line 21, in auto_init_wrapper
+    return fn(*args, **kwargs)
+  File "/Users/arjunarasappan/Documents/Flower 2024 Internship/fedSSL-research/venv/lib/python3.10/site-packages/ray/_private/client_mode_hook.py", line 103, in wrapper
+    return func(*args, **kwargs)
+  File "/Users/arjunarasappan/Documents/Flower 2024 Internship/fedSSL-research/venv/lib/python3.10/site-packages/ray/_private/worker.py", line 2667, in get
+    values, debugger_breakpoint = worker.get_objects(object_refs, timeout=timeout)
+  File "/Users/arjunarasappan/Documents/Flower 2024 Internship/fedSSL-research/venv/lib/python3.10/site-packages/ray/_private/worker.py", line 864, in get_objects
+    raise value.as_instanceof_cause()
+ray.exceptions.RayTaskError(ClientAppException): [36mray::ClientAppActor.run()[39m (pid=11839, ip=127.0.0.1, actor_id=3290868afb3c564f46f2fc1701000000, repr=<flwr.simulation.ray_transport.ray_actor.ClientAppActor object at 0x107fa1b10>)
+  File "/Users/arjunarasappan/Documents/Flower 2024 Internship/fedSSL-research/venv/lib/python3.10/site-packages/flwr/client/client_app.py", line 98, in __call__
+    return self._call(message, context)
+  File "/Users/arjunarasappan/Documents/Flower 2024 Internship/fedSSL-research/venv/lib/python3.10/site-packages/flwr/client/client_app.py", line 81, in ffn
+    out_message = handle_legacy_message_from_msgtype(
+  File "/Users/arjunarasappan/Documents/Flower 2024 Internship/fedSSL-research/venv/lib/python3.10/site-packages/flwr/client/message_handler/message_handler.py", line 96, in handle_legacy_message_from_msgtype
+    client = client_fn(str(message.metadata.partition_id))
+  File "/Users/arjunarasappan/Documents/Flower 2024 Internship/fedSSL-research/client.py", line 139, in client_fn
+    train, test = utils.load_partition(fds, clientID, client_test_split = 0)
+  File "/Users/arjunarasappan/Documents/Flower 2024 Internship/fedSSL-research/utils.py", line 53, in load_partition
+    partition = fds.load_partition(partition_id, "train")
+  File "/Users/arjunarasappan/Documents/Flower 2024 Internship/fedSSL-research/venv/lib/python3.10/site-packages/flwr_datasets/federated_dataset.py", line 169, in load_partition
+    partition = partitioner.load_partition(partition_id)
+  File "/Users/arjunarasappan/Documents/Flower 2024 Internship/fedSSL-research/partitioner.py", line 68, in load_partition
+    return shuffled_dataset.select(range(start_idx, end_idx))
+UnboundLocalError: local variable 'shuffled_dataset' referenced before assignment
+
+The above exception was the direct cause of the following exception:
+
+[36mray::ClientAppActor.run()[39m (pid=11839, ip=127.0.0.1, actor_id=3290868afb3c564f46f2fc1701000000, repr=<flwr.simulation.ray_transport.ray_actor.ClientAppActor object at 0x107fa1b10>)
+  File "/Users/arjunarasappan/Documents/Flower 2024 Internship/fedSSL-research/venv/lib/python3.10/site-packages/flwr/simulation/ray_transport/ray_actor.py", line 64, in run
+    raise ClientAppException(str(ex)) from ex
+flwr.client.client_app.ClientAppException: 
+Exception ClientAppException occurred. Message: local variable 'shuffled_dataset' referenced before assignment
+
+debug | ERROR flwr 2024-11-11 20:16:15,583 | app.py:330 | Your simulation crashed :(. This could be because of several reasons. The most common are: 
+	 > Sometimes, issues in the simulation code itself can cause crashes. It's always a good idea to double-check your code for any potential bugs or inconsistencies that might be contributing to the problem. For example: 
+		 - You might be using a class attribute in your clients that hasn't been defined.
+		 - There could be an incorrect method call to a 3rd party library (e.g., PyTorch).
+		 - The return types of methods in your clients/strategies might be incorrect.
+	 > Your system couldn't fit a single VirtualClient: try lowering `client_resources`.
+	 > All the actors in your pool crashed. This could be because: 
+		 - You clients hit an out-of-memory (OOM) error and actors couldn't recover from it. Try launching your simulation with more generous `client_resources` setting (i.e. it seems {'num_cpus': 2, 'num_gpus': 0} is not enough for your run). Use fewer concurrent actors. 
+		 - You were running a multi-node simulation and all worker nodes disconnected. The head node might still be alive but cannot accommodate any actor with resources: {'num_cpus': 2, 'num_gpus': 0}.
+Take a look at the Flower simulation examples for guidance <https://flower.ai/docs/framework/how-to-run-simulations.html>.
+debug | INFO flwr 2024-11-11 20:19:35,105 | app.py:193 | Starting Flower simulation, config: num_rounds=1000, no round_timeout
+debug | INFO flwr 2024-11-11 20:19:38,195 | app.py:228 | Flower VCE: Ray initialized with resources: {'memory': 5531095860.0, 'node:__internal_head__': 1.0, 'node:127.0.0.1': 1.0, 'CPU': 8.0, 'object_store_memory': 2147483648.0}
+debug | INFO flwr 2024-11-11 20:19:38,195 | app.py:234 | Optimize your simulation with Flower VCE: https://flower.ai/docs/framework/how-to-run-simulations.html
+debug | INFO flwr 2024-11-11 20:19:38,195 | app.py:257 | Flower VCE: Resources for each Virtual Client: {'num_cpus': 2, 'num_gpus': 0}
+debug | INFO flwr 2024-11-11 20:19:38,204 | app.py:303 | Flower VCE: Creating VirtualClientEngineActorPool with 4 actors
+debug | INFO flwr 2024-11-11 20:19:38,204 | server.py:92 | [INIT]
+debug | INFO flwr 2024-11-11 20:19:38,204 | server.py:279 | Requesting initial parameters from one random client
+debug | INFO flwr 2024-11-11 20:19:41,548 | server.py:286 | Received initial parameters from one random client
+debug | INFO flwr 2024-11-11 20:19:41,548 | server.py:94 | Evaluating initial global parameters
+debug | INFO flwr 2024-11-11 20:19:41,548 | server.py:110 | 
+debug | INFO flwr 2024-11-11 20:19:41,548 | server.py:111 | [ROUND 1]
+debug | INFO flwr 2024-11-11 20:19:41,548 | server.py:224 | configure_fit: strategy sampled 5 clients (out of 5)

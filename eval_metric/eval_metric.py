@@ -7,42 +7,37 @@ import torch.nn as nn
 from torch.utils.data import DataLoader
 import random
 
+# import detectors
+# import timm
+
 DEVICE = utils.DEVICE
 
 class EvalMetric:
-    def __init__(self, trainset, testset, num_anchors = 300):
-        self.reference_model = SimCLR(DEVICE, useResnet18=False).to(DEVICE)
+    def __init__(self, ref_model, num_anchors = 300):
+        self.reference_model = ref_model
         self.num_anchors = num_anchors
-        self.cross_entropy = nn.CrossEntropyLoss()
-        self.trainset = trainset
-        self.testset = testset
          
         self.ref_anchor_latents = None
         self.model_anchor_latents = None
         
-        
         self.eval_batches = 10
         
-        
-    def load_reference(self):
-        
-        state_dict = torch.load("/root/fedSSL-research/ssl_centralized/ssl_centralized_model_csa_1940.pth")
-        self.reference_model.load_state_dict(state_dict, strict = True)
     
-    def selectAnchors(self):
-        shuffled_train = self.trainset.shuffle(seed=42)
+    def selectAnchors(self, trainset):
+        shuffled_train = trainset.shuffle(seed=42)
 
         anchors_list = shuffled_train.select(range(self.num_anchors))
         self.anchors = [anchor['img'][0] for anchor in anchors_list]
         
-        self.anchors = torch.stack(self.anchors)
-        self.anchors = self.anchors.to(DEVICE)
-        #anchors have shape of (200, 3, 32, 32)
+        anchors = torch.stack(self.anchors)
+        return anchors
+    
+    def setAnchors(self, anchors):
+        self.anchors = anchors
         
     def calcReferenceAnchorLatents(self):
-        #caluclate latent representations of anchors for reference model and normalize latents
-        self.reference_model.eval()
         
+        self.reference_model.eval()
         
         with torch.no_grad():
             # num_anchors * latentsize
@@ -62,11 +57,8 @@ class EvalMetric:
             self.model_anchor_latents = model(self.anchors).to(DEVICE)
             
     
-    
     def computeSimilarity(self, testbatch, model):
         testbatch = testbatch.to(DEVICE)
-        
-        model.setInference(True)
         
         #batchsize x latentsize
         abs_model_latent = model(testbatch)
@@ -80,11 +72,27 @@ class EvalMetric:
         relative_model = abs_model_latent @ self.model_anchor_latents.T
         relative_ref = abs_ref_latent @ self.ref_anchor_latents.T
 
+        #normalize relative representations
+
         rel_model_normed = relative_model / torch.norm(relative_model, p=2, dim=1, keepdim=True)
         rel_ref_normed = relative_ref / torch.norm(relative_ref, p=2, dim=1, keepdim=True)
         
-        similarities = torch.sum(rel_model_normed * rel_ref_normed, dim=1)
-        return torch.mean(similarities).item(), torch.median(similarities).item()
+        print(torch.norm(rel_model_normed, p=2, dim=1, keepdim=True))
+        print(torch.norm(rel_ref_normed, p=2, dim=1, keepdim=True))
+        
+        similarities = torch.sum(relative_model * relative_ref, dim=1)
+        print(similarities)
+
+        similarities_normed = torch.sum(rel_model_normed * rel_ref_normed, dim=1)
+        print(similarities_normed)
+
+        
+        sim_data = [torch.mean(similarities).item(), torch.median(similarities).item(), torch.var(similarities).item()]
+        sim_norm_data = [torch.mean(similarities_normed).item(), torch.median(similarities_normed).item(), torch.var(similarities_normed).item()]
+
+        
+        
+        return sim_data, sim_norm_data
         
         
         

@@ -4,7 +4,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader
-from model import SimCLR, SimCLRPredictor, NTXentLoss
+from scripts.model import SimCLR, SimCLRPredictor, NTXentLoss
 from flwr_datasets import FederatedDataset
 from flwr_datasets.partitioner import IidPartitioner
 import torchvision.transforms as transforms
@@ -21,6 +21,8 @@ DEVICE = utils.DEVICE
 
 EPOCHS = 1000
 SEGMENTS = 1
+
+#epochs to train linear
 fine_tune_epochs = 3
 
 
@@ -41,11 +43,23 @@ def main(useResnet18):
         
     trainset, testset = utils.load_augmented()
     
-    relative_eval = EvalMetric(trainset, testset)
+    #setup eval metric
     
-    relative_eval.load_reference()
-    # eval.evaluateReference()
-    relative_eval.selectAnchors()
+    reference_path = './reference_models/ssl_centralized_model_csa_1225.pth'
+    
+    reference = SimCLR(DEVICE, useResnet18=False).to(DEVICE)
+    state_dict = torch.load(reference_path,  map_location=torch.device('cpu'))
+    reference.load_state_dict(state_dict, strict = True)
+    
+    reference.eval()
+    reference.setInference(True)
+        
+    relative_eval = EvalMetric(reference)
+    anchors = relative_eval.selectAnchors(trainset)
+    
+    relative_eval.setAnchors(anchors)
+
+
     relative_eval.calcReferenceAnchorLatents()
     
     ssl_simulation(trainset, testset, useResnet18, relative_eval)
@@ -63,7 +77,10 @@ def ssl_simulation(trainset, testset, useResnet18, relative_eval):
     
     
     trainloader = DataLoader(trainset, batch_size = 512, shuffle = True)
-    testloader = DataLoader(testset, batch_size = 512, shuffle = True)
+    testloader = DataLoader(testset, batch_size = 1024, shuffle = True)\
+    
+
+    
     
     for epoch in range(EPOCHS * SEGMENTS):
         
@@ -108,7 +125,7 @@ def train(net, trainloader, optimizer, criterion):
 def computeSimilarities(testloader, simclr, relative_eval):
     
     
-    means, medians = [], []
+    similarity, similarity_normed = [], []
     batch = 0
     for item in testloader:
         
@@ -117,15 +134,18 @@ def computeSimilarities(testloader, simclr, relative_eval):
         x = x.to(DEVICE)
         
         relative_eval.calcModelLatents(simclr)
-        mean, median = relative_eval.computeSimilarity(x, simclr)
-        print(f"Computing sims {batch}/{len(testloader)}: {mean}, {median}")
-        means.append(mean)
-        medians.append(median)
+        
+        sim, normed_sim = relative_eval.computeSimilarity(x, simclr)
+        print(f"Computing sims {batch}/{len(testloader)}: {sim[0]}, {sim[1]}")
+        similarity.append(sim)
+        similarity_normed.append(normed_sim)
         batch += 1
-    mean, median = torch.mean(torch.Tensor(means)), torch.median(torch.Tensor(medians))
-    print(f"Relative Eval DONE: {mean}, {median}")
+        
+    sim = torch.mean(torch.Tensor(similarity), dim = 1)
+    normed_sim = torch.mean(torch.Tensor(similarity), dim = 1)
+    print(f"Relative Eval DONE: {sim}, {normed_sim}")
 
-    return mean, median
+    return sim, normed_sim
 
 def supervised_train(simclr, simclr_predictor, trainloader, optimizer, criterion):
     state_dict = simclr.state_dict()
@@ -134,7 +154,6 @@ def supervised_train(simclr, simclr_predictor, trainloader, optimizer, criterion
     simclr_predictor.set_encoder_parameters(weights)
     
     simclr_predictor.train()
-    
     
     num_batches = len(trainloader)
 

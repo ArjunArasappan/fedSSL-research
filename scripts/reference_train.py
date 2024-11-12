@@ -31,40 +31,28 @@ log_path = "./log.txt"
 def main(useResnet18):
     global simclr
     print(DEVICE)
-    #Data: load augmented train data for SimCLR, test data, 
-    #unsupervised SSL learning of simCLR
-    #apply relative representations to guess accuracy
-    #find actualy representation accuracy with linear predictors & MLP's on frozen encoder
-    
-        
+            
     
     simclr = SimCLR(DEVICE, useResnet18=useResnet18).to(DEVICE)
     simclr_predictor = SimCLRPredictor(10, DEVICE, useResnet18=useResnet18, tune_encoder = False).to(DEVICE)
 
     epochLoad = load_model(simclr)
-    # epochLoad = 0
+
     simclr_optimizer = optim.SGD(simclr.parameters(), lr=0.01, momentum=0.9, weight_decay=1e-6)
     
-    # warmup_scheduler = optim.lr_scheduler.CosineAnnealingLR(simclr_optimizer, T_max = EPOCHS)
     cosine_scheduler = optim.lr_scheduler.CosineAnnealingLR(simclr_optimizer, T_max = EPOCHS)
 
 
-
-    predictor_optimizer = torch.optim.Adam(simclr_predictor.parameters(), lr=3e-4)
-
     
     ntxent = NTXentLoss(device=DEVICE).to(DEVICE)
-    cross_entropy = nn.CrossEntropyLoss()
 
 
     trainset, testset = utils.load_augmented()
 
 
-    
-    print('yuh')
+
     trainloader = DataLoader(trainset, batch_size = 512, shuffle = True)
-    testloader = DataLoader(testset, batch_size = 256, shuffle = True)
-    print('cuh')
+
     
     for epoch in range(epochLoad + 1, EPOCHS):
         avgLoss = ssl_train(epoch, simclr, trainloader, simclr_optimizer, ntxent)
@@ -77,7 +65,7 @@ def main(useResnet18):
         
 def load_model(simclr):
     
-    list_of_files = [fname for fname in glob.glob("./ssl_centralized/ssl_centralized_model_*.pth")]
+    list_of_files = [fname for fname in glob.glob("./reference_models/ssl_centralized_model_*.pth")]
     latest_round_file = max(list_of_files, key=os.path.getctime)
     print("Loading pre-trained model from:", latest_round_file)
     count = latest_round_file.split('_')[5].split('.')[0]
@@ -127,7 +115,7 @@ def save_model(epoch):
     if not os.path.isdir('./ssl_centralized'):
         os.mkdir('./ssl_centralized')
 
-    torch.save(simclr.state_dict(), f"./ssl_centralized/ssl_centralized_model_csa_{epoch}.pth")
+    torch.save(simclr.state_dict(), f"./reference_models/ssl_centralized_model_csa_{epoch}.pth")
 
 if __name__ == "__main__":
     main(False)

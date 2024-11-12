@@ -1,94 +1,81 @@
-import torch
+import torchvision.transforms as transforms
+from torch.utils.data import DataLoader, random_split
+from torchvision.datasets import CIFAR10, CIFAR100
 from transform import SimCLRTransform
+from torch.utils.data import TensorDataset, Dataset
+from torch import Generator
+import torch
 from flwr_datasets import FederatedDataset
 from flwr_datasets.partitioner import IidPartitioner
-import torchvision.transforms as transforms
+
+from partitioner import Anchor_Partitioner
 
 import csv
-
-ssl_transform = SimCLRTransform()
-
 NUM_CLASSES = 10
+
 useResnet18 = False
 fineTuneEncoder = False
+addGausainBlur = True
+evaluateEveryRound = False
+
 DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-log_path = './ssl_log.txt'
+centralized_finetune_split = 1
+centralized_test_split = 0.25
 
-def get_mean_stddev(data):
-    mean = np.mean(data, axis=(0, 1, 2))
-    std = np.std(data, axis=(0, 1, 2))
-    
-    return mean, std
+FINETUNE_EPOCHS = 1
+BATCH_SIZE = 512
 
-def applyTrainTransform(batch):
-    transform_train = transforms.Compose([
-        transforms.ToTensor(),
-        transforms.RandomCrop(32, padding=4),
-        transforms.RandomHorizontalFlip(),
-        transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
-    ])
-        
-    batch["img"] = [transform_train(img) for img in batch["img"]]
-    return batch
+transform = SimCLRTransform(size=32)
 
-def applyTestTransform(batch):
-    
-    transform_test = transforms.Compose([
-        transforms.ToTensor(),
-        transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
-    ])
-        
-    batch["img"] = [transform_test(img) for img in batch["img"]]
-    return batch
-
-def applySSLAugment(batch):
-    batch["img"] = [ssl_transform(img) for img in batch["img"]]
-    return batch
-
-# def load_central_test():
-#     fds = FederatedDataset(dataset="cifar10")
-    
-#     train_data = fds.load_split("train")
-
-#     train_data = train_data.with_transform(applyTrainTransform)
-
-#     test_data = fds.load_split("test")
-#     test_data = test_data.with_transform(applyTestTransform)
-    
-#     return train_data, test_data
-
-
-def load_data():
-    fds = FederatedDataset(dataset="cifar10", partitioners = {'train' : IidPartitioner(1), 'test' : IidPartitioner(1)})
-    
-    train_data = fds.load_split("train")
-    train_data = train_data.with_transform(applyTrainTransform)
-
-    test_data = fds.load_split("test")
-    test_data = test_data.with_transform(applyTestTransform)
-
-
-    return train_data, test_data
-
-def load_augmented():
-    fds = FederatedDataset(dataset="cifar10", partitioners = {'train' : IidPartitioner(1), 'test' : IidPartitioner(1)})
-    
-    train_data = fds.load_split("train")
-    train_data = train_data.with_transform(applySSLAugment)
-
-    test_data = fds.load_split("test")
-    test_data = test_data.with_transform(applyTestTransform)
-    
-
-    return train_data, test_data
-
-def ssl_log(data, path = log_path):
+def sim_log(data, path = './log_files/datalog.csv'):
     with open(path, 'a', newline='') as file:
         writer = csv.writer(file)
         writer.writerow(data)
+
+    
+def apply_transforms(batch):
+    batch["img"] = [transform(img) for img in batch["img"]]
+    return batch
+
+def get_fds(partitions):
+    client_fds = FederatedDataset(dataset="cifar10", partitioners={'train': IidPartitioner(partitions)})
+    return client_fds
+
+def get_anchored_fds(num_clients, num_anchors, image_size=32, batch_size=BATCH_SIZE):
+    
+    #partition into num_clients + 1 partitions with all being equal, except 1st partition is anchor partition 
+    fds = FederatedDataset(dataset="cifar10", partitioners = {'train' : Anchor_Partitioner(num_clients, num_anchors), 'test' : 1})
+    return fds
+
+def load_partition(fds, partition_id, client_test_split = 0):
+    
+    partition = fds.load_partition(partition_id, "train")
+    partition = partition.with_transform(apply_transforms)
+    
+    if client_test_split != 0:
+        partition = partition.train_test_split(test_size=client_test_split)
+        return partition["train"], partition["test"]
+    
+    return partition, None
+
+def load_centralized_data(image_size=32, batch_size=BATCH_SIZE):
+    fds = FederatedDataset(dataset="cifar10", partitioners = {'train' : 1, 'test' : 1})
         
-def sim_log(data):
-    with open('./sim_log.txt', 'a', newline='') as file:
-        writer = csv.writer(file)
-        writer.writerow(data)
+    centralized_train_data = fds.load_split("train")
+    centralized_train_data = centralized_train_data.with_transform(apply_transforms)
+    
+    if centralized_finetune_split != 1:
+        centralized_train_data = centralized_train_data.train_test_split(test_size=centralized_finetune_split, shuffle = True, seed=42)['test']
+
+    centralized_test_data = fds.load_split("test")
+    centralized_test_data = centralized_test_data.with_transform(apply_transforms)
+
+    if centralized_test_split != 1:
+        centralized_test_data = centralized_test_data.train_test_split(test_size=centralized_test_split, shuffle = True, seed=42)['test']
+    
+    return centralized_train_data, centralized_test_data
+
+
+        
+ 
