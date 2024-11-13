@@ -31,12 +31,14 @@ class SimCLRTransform:
     def __call__(self, x):
 
         transform = transforms.Compose(self.augment_transform)
-        no_augment = self.test_transform()
 
-        return (no_augment(x), transform(x), transform(x))
 
-    def test_transform(self):
-        return transforms.Compose([
+        return (self.test_transform(x), transform(x), transform(x))
+
+    def test_transform(self, x):
+        test =  transforms.Compose([
             transforms.Resize(self.size),
             transforms.ToTensor()
         ])
+        
+        return (test(x))

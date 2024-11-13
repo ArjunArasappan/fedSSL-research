@@ -31,16 +31,16 @@ finetune_fraction = 0.3
 log_path = "./log.txt"
 
 
-
 reference_model = None
 relative_eval_metric = None
 useResnet18 = False
 simclr_predictor = None
 
-def init(anchors):
+def init(anchors, test_data):
     global reference_model, relative_eval_metric, trainset, testset, simclr_predictor
     
     trainset, testset = utils.load_centralized_data()
+
         
     
     
@@ -48,24 +48,37 @@ def init(anchors):
     
     reference_model = SimCLR(DEVICE, useResnet18=False).to(DEVICE)
     
-    reference_model.load_state_dict(torch.load(reference_path,  map_location=torch.device('cpu')), strict = True)
-    # reference.load_state_dict(torch.load(reference_path), strict = True)
+    
+    
+    # reference_model.load_state_dict(torch.load(reference_path,  map_location=torch.device('cpu')), strict = True)
+    reference_model.load_state_dict(torch.load(reference_path), strict = False)
+    reference_model.to(utils.DEVICE)
+    
+    print('cujh')
     
     reference_model.eval()
     reference_model.setInference(True)
+    
+    print('cujh')
+
         
     relative_eval_metric = EvalMetric(reference_model)
-    anchors = relative_eval_metric.selectAnchors(trainset)
-    
+    print('selected')
     relative_eval_metric.setAnchors(anchors)
 
+    print('cujh')
+
+
     relative_eval_metric.calcReferenceAnchorLatents()
+    
+    print('cujh')
+
     
     simclr_predictor = SimCLRPredictor(10, DEVICE, useResnet18=useResnet18, tune_encoder = False).to(DEVICE)
     
     random_init = SimCLR(DEVICE, useResnet18=False).to(DEVICE)
     
-    calculate_metrics(random_init, 0)
+    # calculate_metrics(random_init, 0)
     
 
 
@@ -83,44 +96,57 @@ def calculate_metrics(simclr, round):
     ntxent = NTXentLoss(device=DEVICE)
     cross_entropy = nn.CrossEntropyLoss()
     
-    trainloader = DataLoader(trainset, batch_size = 512, shuffle = True)
-    testloader = DataLoader(testset, batch_size = 512, shuffle = True)\
+    trainloader = DataLoader(trainset, batch_size = 512, shuffle = True, num_workers = utils.num_workers)
+    testloader = DataLoader(testset, batch_size = 512, shuffle = True, num_workers = utils.num_workers)
     
 
-    mean, median = computeSimilarities(testloader, simclr, relative_eval_metric)
+    similarities = computeSimilarities(testloader, simclr, relative_eval_metric)
 
     supervised_train(simclr_predictor, trainloader, predictor_optimizer, cross_entropy)
     loss, accuracy = supervised_test(simclr_predictor, testloader, cross_entropy)
     
     
-    utils.sim_log([SEGMENTS, round, mean.item(), median.item(), loss, accuracy])
+    utils.sim_log([SEGMENTS, round, loss, accuracy] + similarities)
         
     
     
 def computeSimilarities(testloader, simclr, relative_eval):
+    print(len(testloader))
     
-    
-    similarity, similarity_normed = [], []
+    similarities = []
     batch = 0
     for item in testloader:
         
         x, _, _ = item['img']
-        
+    
         x = x.to(DEVICE)
+        
+        simclr.setInference(True)
         
         relative_eval.calcModelLatents(simclr)
         
-        sim, normed_sim = relative_eval.computeSimilarity(x, simclr)
-        print(f"Computing sims {batch}/{len(testloader)}: {sim}, {normed_sim}")
-        similarity.append(sim)
-        similarity_normed.append(normed_sim)
+        
+        sim_data = relative_eval.computeSimilarity(x, simclr)
+        print(sim_data.shape)
+        print(f"Computing sims {batch}/{len(testloader)}")
+        similarities.append(sim_data)
         batch += 1
         
-    sim = torch.mean(torch.Tensor(similarity), dim = 1)
-    normed_sim = torch.mean(torch.Tensor(similarity), dim = 1)
-    print(f"Relative Eval DONE: {sim}, {normed_sim}")
+    similarities = torch.stack(similarities)
+    print('before mean sims', similarities)
+    similarities = torch.mean(similarities, dim = 0)
+    
 
-    return sim, normed_sim
+    
+    
+    print('mean sims', similarities)
+    
+    flattened_list = similarities.flatten().tolist()
+
+    print(f"Relative Eval DONE:")
+
+
+    return flattened_list
 
 def supervised_train(simclr_predictor, trainloader, optimizer, criterion):
     
@@ -143,7 +169,7 @@ def supervised_train(simclr_predictor, trainloader, optimizer, criterion):
             loss.backward()
             optimizer.step()
 
-            print(f"Client Train Batch: {idx} / {num_batches}")
+            print(f"Supervised Train Batch: {idx} / {num_batches}")
         
 def supervised_test(simclr_predictor, testloader, criterion):
     simclr_predictor.eval()
@@ -157,7 +183,7 @@ def supervised_test(simclr_predictor, testloader, criterion):
 
     with torch.no_grad():
         for item in testloader:
-            x, _, _, labels = item['img'], item['label']
+            (x, _, _,), labels = item['img'], item['label']
             
             
             x, labels = x.to(DEVICE), labels.to(DEVICE)
@@ -171,7 +197,7 @@ def supervised_test(simclr_predictor, testloader, criterion):
             correct += (predicted == labels).sum().item()
             if batch >= num_batches / 2:
                 break
-            print(f"Test Batch: {batch} / {num_batches}")
+            print(f"Supervised Test Batch: {batch} / {num_batches}")
             batch += 1
   
     return loss / batch, correct / total
@@ -189,5 +215,5 @@ def save_model(acc):
     count += 1
 
 if __name__ == "__main__":
-    main(False)
+   init(None)
 

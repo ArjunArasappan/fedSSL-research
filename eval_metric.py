@@ -7,6 +7,9 @@ import torch.nn as nn
 from torch.utils.data import DataLoader
 import random
 
+import torch.nn.functional as F
+
+
 # import detectors
 # import timm
 
@@ -23,17 +26,9 @@ class EvalMetric:
         self.eval_batches = 10
         
     
-    def selectAnchors(self, trainset):
-        shuffled_train = trainset.shuffle(seed=42)
-
-        anchors_list = shuffled_train.select(range(self.num_anchors))
-        self.anchors = [anchor['img'][0] for anchor in anchors_list]
-        
-        anchors = torch.stack(self.anchors)
-        return anchors
-    
     def setAnchors(self, anchors):
-        self.anchors = anchors
+        print('setanchors')
+        self.anchors = anchors.to(DEVICE)
         
     def calcReferenceAnchorLatents(self):
         
@@ -42,6 +37,10 @@ class EvalMetric:
         with torch.no_grad():
             # num_anchors * latentsize
             self.ref_anchor_latents = self.reference_model(self.anchors).to(DEVICE)
+            self.ref_anchor_normed = F.normalize(self.ref_anchor_latents, p=2, dim=1)
+            
+            latents = self.ref_anchor_latents.matmul(self.ref_anchor_latents.T)
+            
 
 
     
@@ -55,57 +54,83 @@ class EvalMetric:
         with torch.no_grad():
             #num_anchors * latentsize
             self.model_anchor_latents = model(self.anchors).to(DEVICE)
+            self.model_anchor_normed = F.normalize(self.model_anchor_latents, p=2, dim=1)
             
+            latents = self.model_anchor_latents.matmul(self.model_anchor_latents.T)
+                        
+    # def cos_similarity()
     
     def computeSimilarity(self, testbatch, model):
         testbatch = testbatch.to(DEVICE)
         
+        
+        
+        print('computing sims....')
+        
         #batchsize x latentsize
         abs_model_latent = model(testbatch)
-        # norm_model_latent = abs_model_latent / torch.norm(abs_model_latent, p=2, dim=1, keepdim=True)
-
-        abs_ref_latent = self.reference_model(testbatch)
-        # norm_ref_latent = abs_ref_latent / torch.norm(abs_ref_latent, p=2, dim=1, keepdim=True)
+        abs_reference_latent = self.reference_model(testbatch)
         
-        #batchsize x num_anchors
-        relative_model = abs_model_latent.matmul(self.model_anchor_latents.T)
-        relative_ref = abs_ref_latent.matmul(self.ref_anchor_latents.T)
-        
-        print("rel model", relative_model[0])
-        print("rel ref", relative_ref[0])
-        
-        # print(relative_model[0].T.dot(relative_ref[0]) )
+        abs_model_normed = F.normalize(abs_model_latent, p=2, dim=1).to(DEVICE)
+        abs_reference_normed = F.normalize(abs_reference_latent, p=2, dim=1).to(DEVICE)
         
         
-
-
         
-
-
-        #normalize relative representations
-
-        rel_model_normed = relative_model / torch.norm(relative_model, p=2, dim=1, keepdim=True)
-        rel_ref_normed = relative_ref / torch.norm(relative_ref, p=2, dim=1, keepdim=True)
+        relative_model_representations = [0] * 4
+        relative_reference_representations = [0] * 4
         
-        # print(torch.norm(rel_model_normed, p=2, dim=1, keepdim=True))
-        # print(torch.norm(rel_ref_normed, p=2, dim=1, keepdim=True))
+        # no normalization: batchsize x anchor size
+        relative_model_representations[0] = abs_model_latent @ (self.model_anchor_latents.T)
+        relative_reference_representations[0] = abs_reference_latent @ (self.ref_anchor_latents.T)
         
-        similarities = torch.sum(relative_model * relative_ref, dim=1)
-        # print(similarities)
-
-        similarities_normed = torch.sum(rel_model_normed * rel_ref_normed, dim=1)
-        # print(similarities_normed)
-
+        # normalize anchor latents: batchsize x anchor size
+        relative_model_representations[1] = abs_model_latent @ (self.model_anchor_normed.T)
+        relative_reference_representations[1] = abs_reference_latent @ (self.ref_anchor_normed.T)
         
-        sim_data = [torch.mean(similarities).item(), torch.median(similarities).item(), torch.var(similarities).item()]
-        sim_norm_data = [torch.mean(similarities_normed).item(), torch.median(similarities_normed).item(), torch.var(similarities_normed).item()]
+        # no normalization: batchsize x anchor size
+        relative_model_representations[2] = abs_model_normed @ (self.model_anchor_latents.T)
+        relative_reference_representations[2] = abs_reference_normed @ (self.ref_anchor_latents.T)
+        
+        
+        # normalize anchor latents: batchsize x anchor size
+        relative_model_representations[3] = abs_model_normed @ (self.model_anchor_normed.T)
+        relative_reference_representations[3] = abs_reference_normed @ (self.ref_anchor_normed.T)
+        
+        
+        
+        #comparision schemes: dot product, cosine similarity
+        
+        data = []
+        
 
         
         
-        return sim_data, sim_norm_data
+        for i, (model, reference) in enumerate(zip(relative_model_representations, relative_reference_representations)):
+            dot_sim = torch.sum(model * reference, dim=1)
+            cos_sim = F.cosine_similarity(model, reference, dim = 1)
+            dot_data = [torch.mean(dot_sim).item(), torch.median(dot_sim).item(), torch.var(dot_sim).item()]
+            cos_data = [torch.mean(cos_sim).item(), torch.median(cos_sim).item(), torch.var(cos_sim).item()]
+            
+            tensorized_data = torch.tensor([dot_data, cos_data])
+            print(tensorized_data.shape)
+            
+            
+            print(i, dot_data[0])
+            print(i, cos_data[0])
+            
+            data.append(tensorized_data)
+
+        
+        data = torch.stack(data)
+        print(data.shape)
+        
+        #return 4x2x3 matrix
+        return data
+ 
+    
         
         
         
-        
-        
+
+
         

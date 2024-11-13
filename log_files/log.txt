@@ -3264,3 +3264,857 @@ debug | INFO flwr 2024-11-11 21:51:58,372 | server.py:94 | Evaluating initial gl
 debug | INFO flwr 2024-11-11 21:51:58,372 | server.py:110 | 
 debug | INFO flwr 2024-11-11 21:51:58,372 | server.py:111 | [ROUND 1]
 debug | INFO flwr 2024-11-11 21:51:58,372 | server.py:224 | configure_fit: strategy sampled 5 clients (out of 5)
+debug | INFO flwr 2024-11-13 21:21:58,698 | app.py:219 | Starting Flower simulation, config: num_rounds=1000, no round_timeout
+debug | INFO flwr 2024-11-13 21:22:01,146 | app.py:242 | Flower VCE: Ray initialized with resources: {'accelerator_type:G': 1.0, 'node:__internal_head__': 1.0, 'CPU': 30.0, 'memory': 589740874547.0, 'object_store_memory': 127506837708.0, 'GPU': 1.0, 'node:172.17.0.6': 1.0}
+debug | INFO flwr 2024-11-13 21:22:01,146 | app.py:248 | Optimize your simulation with Flower VCE: https://flower.ai/docs/framework/how-to-run-simulations.html
+debug | INFO flwr 2024-11-13 21:22:01,146 | app.py:271 | Flower VCE: Resources for each Virtual Client: {'num_cpus': 2, 'num_gpus': 0.2}
+debug | INFO flwr 2024-11-13 21:22:01,163 | app.py:317 | Flower VCE: Creating VirtualClientEngineActorPool with 5 actors
+debug | INFO flwr 2024-11-13 21:22:01,163 | server.py:92 | [INIT]
+debug | INFO flwr 2024-11-13 21:22:01,163 | server.py:281 | Requesting initial parameters from one random client
+debug | INFO flwr 2024-11-13 21:22:07,140 | server.py:288 | Received initial parameters from one random client
+debug | INFO flwr 2024-11-13 21:22:07,140 | server.py:94 | Starting evaluation of initial global parameters
+debug | INFO flwr 2024-11-13 21:22:07,141 | server.py:106 | Evaluation returned no results (`None`)
+debug | INFO flwr 2024-11-13 21:22:07,141 | server.py:112 | 
+debug | INFO flwr 2024-11-13 21:22:07,141 | server.py:113 | [ROUND 1]
+debug | INFO flwr 2024-11-13 21:22:07,141 | server.py:226 | configure_fit: strategy sampled 5 clients (out of 5)
+debug | INFO flwr 2024-11-13 21:22:40,709 | server.py:240 | aggregate_fit: received 5 results and 0 failures
+debug | WARNING flwr 2024-11-13 21:22:41,277 | fedavg.py:252 | No fit_metrics_aggregation_fn provided
+debug | ERROR flwr 2024-11-13 21:22:47,052 | app.py:344 | calculate_metrics() missing 1 required positional argument: 'round'
+debug | ERROR flwr 2024-11-13 21:22:47,054 | app.py:345 | Traceback (most recent call last):
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/simulation/app.py", line 339, in start_simulation
+    hist = run_fl(
+           ^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/server/server.py", line 492, in run_fl
+    hist, elapsed_time = server.fit(
+                         ^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/server/server.py", line 115, in fit
+    res_fit = self.fit_round(
+              ^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/server/server.py", line 251, in fit_round
+    ] = self.strategy.aggregate_fit(server_round, results, failures)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/main.py", line 96, in aggregate_fit
+    centralized_eval.calculate_metrics(gb_simclr)
+TypeError: calculate_metrics() missing 1 required positional argument: 'round'
+
+debug | ERROR flwr 2024-11-13 21:22:47,054 | app.py:346 | Your simulation crashed :(. This could be because of several reasons. The most common are: 
+	 > Sometimes, issues in the simulation code itself can cause crashes. It's always a good idea to double-check your code for any potential bugs or inconsistencies that might be contributing to the problem. For example: 
+		 - You might be using a class attribute in your clients that hasn't been defined.
+		 - There could be an incorrect method call to a 3rd party library (e.g., PyTorch).
+		 - The return types of methods in your clients/strategies might be incorrect.
+	 > Your system couldn't fit a single VirtualClient: try lowering `client_resources`.
+	 > All the actors in your pool crashed. This could be because: 
+		 - You clients hit an out-of-memory (OOM) error and actors couldn't recover from it. Try launching your simulation with more generous `client_resources` setting (i.e. it seems {'num_cpus': 2, 'num_gpus': 0.2} is not enough for your run). Use fewer concurrent actors. 
+		 - You were running a multi-node simulation and all worker nodes disconnected. The head node might still be alive but cannot accommodate any actor with resources: {'num_cpus': 2, 'num_gpus': 0.2}.
+Take a look at the Flower simulation examples for guidance <https://flower.ai/docs/framework/how-to-run-simulations.html>.
+debug | INFO flwr 2024-11-13 21:38:18,556 | app.py:219 | Starting Flower simulation, config: num_rounds=1000, no round_timeout
+debug | INFO flwr 2024-11-13 21:38:20,904 | app.py:242 | Flower VCE: Ray initialized with resources: {'accelerator_type:G': 1.0, 'node:__internal_head__': 1.0, 'CPU': 30.0, 'memory': 589981104947.0, 'object_store_memory': 127506837708.0, 'node:172.17.0.6': 1.0, 'GPU': 1.0}
+debug | INFO flwr 2024-11-13 21:38:20,904 | app.py:248 | Optimize your simulation with Flower VCE: https://flower.ai/docs/framework/how-to-run-simulations.html
+debug | INFO flwr 2024-11-13 21:38:20,904 | app.py:271 | Flower VCE: Resources for each Virtual Client: {'num_cpus': 2, 'num_gpus': 0.2}
+debug | INFO flwr 2024-11-13 21:38:20,987 | app.py:317 | Flower VCE: Creating VirtualClientEngineActorPool with 5 actors
+debug | INFO flwr 2024-11-13 21:38:20,988 | server.py:92 | [INIT]
+debug | INFO flwr 2024-11-13 21:38:20,988 | server.py:281 | Requesting initial parameters from one random client
+debug | INFO flwr 2024-11-13 21:38:27,484 | server.py:288 | Received initial parameters from one random client
+debug | INFO flwr 2024-11-13 21:38:27,484 | server.py:94 | Starting evaluation of initial global parameters
+debug | INFO flwr 2024-11-13 21:38:27,484 | server.py:106 | Evaluation returned no results (`None`)
+debug | INFO flwr 2024-11-13 21:38:27,485 | server.py:112 | 
+debug | INFO flwr 2024-11-13 21:38:27,485 | server.py:113 | [ROUND 1]
+debug | INFO flwr 2024-11-13 21:38:27,485 | server.py:226 | configure_fit: strategy sampled 5 clients (out of 5)
+debug | INFO flwr 2024-11-13 21:39:01,938 | server.py:240 | aggregate_fit: received 5 results and 0 failures
+debug | WARNING flwr 2024-11-13 21:39:02,529 | fedavg.py:252 | No fit_metrics_aggregation_fn provided
+debug | ERROR flwr 2024-11-13 21:39:08,345 | app.py:344 | calculate_metrics() missing 1 required positional argument: 'round'
+debug | ERROR flwr 2024-11-13 21:39:08,347 | app.py:345 | Traceback (most recent call last):
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/simulation/app.py", line 339, in start_simulation
+    hist = run_fl(
+           ^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/server/server.py", line 492, in run_fl
+    hist, elapsed_time = server.fit(
+                         ^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/server/server.py", line 115, in fit
+    res_fit = self.fit_round(
+              ^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/server/server.py", line 251, in fit_round
+    ] = self.strategy.aggregate_fit(server_round, results, failures)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/main.py", line 96, in aggregate_fit
+    centralized_eval.calculate_metrics(gb_simclr)
+TypeError: calculate_metrics() missing 1 required positional argument: 'round'
+
+debug | ERROR flwr 2024-11-13 21:39:08,347 | app.py:346 | Your simulation crashed :(. This could be because of several reasons. The most common are: 
+	 > Sometimes, issues in the simulation code itself can cause crashes. It's always a good idea to double-check your code for any potential bugs or inconsistencies that might be contributing to the problem. For example: 
+		 - You might be using a class attribute in your clients that hasn't been defined.
+		 - There could be an incorrect method call to a 3rd party library (e.g., PyTorch).
+		 - The return types of methods in your clients/strategies might be incorrect.
+	 > Your system couldn't fit a single VirtualClient: try lowering `client_resources`.
+	 > All the actors in your pool crashed. This could be because: 
+		 - You clients hit an out-of-memory (OOM) error and actors couldn't recover from it. Try launching your simulation with more generous `client_resources` setting (i.e. it seems {'num_cpus': 2, 'num_gpus': 0.2} is not enough for your run). Use fewer concurrent actors. 
+		 - You were running a multi-node simulation and all worker nodes disconnected. The head node might still be alive but cannot accommodate any actor with resources: {'num_cpus': 2, 'num_gpus': 0.2}.
+Take a look at the Flower simulation examples for guidance <https://flower.ai/docs/framework/how-to-run-simulations.html>.
+debug | INFO flwr 2024-11-13 21:53:52,476 | app.py:219 | Starting Flower simulation, config: num_rounds=1000, no round_timeout
+debug | INFO flwr 2024-11-13 21:53:54,793 | app.py:242 | Flower VCE: Ray initialized with resources: {'accelerator_type:G': 1.0, 'node:__internal_head__': 1.0, 'CPU': 30.0, 'object_store_memory': 127506837708.0, 'memory': 589980478259.0, 'GPU': 1.0, 'node:172.17.0.6': 1.0}
+debug | INFO flwr 2024-11-13 21:53:54,793 | app.py:248 | Optimize your simulation with Flower VCE: https://flower.ai/docs/framework/how-to-run-simulations.html
+debug | INFO flwr 2024-11-13 21:53:54,793 | app.py:271 | Flower VCE: Resources for each Virtual Client: {'num_cpus': 2, 'num_gpus': 0.2}
+debug | INFO flwr 2024-11-13 21:53:54,870 | app.py:317 | Flower VCE: Creating VirtualClientEngineActorPool with 5 actors
+debug | INFO flwr 2024-11-13 21:53:54,871 | server.py:92 | [INIT]
+debug | INFO flwr 2024-11-13 21:53:54,871 | server.py:281 | Requesting initial parameters from one random client
+debug | ERROR flwr 2024-11-13 21:53:59,430 | ray_client_proxy.py:106 | Traceback (most recent call last):
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/simulation/ray_transport/ray_client_proxy.py", line 94, in _submit_job
+    out_mssg, updated_context = self.actor_pool.get_client_result(
+                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/simulation/ray_transport/ray_actor.py", line 398, in get_client_result
+    return self._fetch_future_result(cid)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/simulation/ray_transport/ray_actor.py", line 279, in _fetch_future_result
+    res_cid, out_mssg, updated_context = ray.get(
+                                         ^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/ray/_private/auto_init_hook.py", line 21, in auto_init_wrapper
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/ray/_private/client_mode_hook.py", line 103, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/ray/_private/worker.py", line 2753, in get
+    values, debugger_breakpoint = worker.get_objects(object_refs, timeout=timeout)
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/ray/_private/worker.py", line 904, in get_objects
+    raise value.as_instanceof_cause()
+ray.exceptions.RayTaskError(ClientAppException): [36mray::ClientAppActor.run()[39m (pid=84355, ip=172.17.0.6, actor_id=7b79d1f115ce56f9ce0b146e01000000, repr=<flwr.simulation.ray_transport.ray_actor.ClientAppActor object at 0x7f1d9f7d7a70>)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/client/client_app.py", line 143, in __call__
+    return self._call(message, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/client/client_app.py", line 126, in ffn
+    out_message = handle_legacy_message_from_msgtype(
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/client/message_handler/message_handler.py", line 95, in handle_legacy_message_from_msgtype
+    client = client_fn(context)
+             ^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/client.py", line 137, in client_fn
+    cid = context['partition_id']
+          ~~~~~~~^^^^^^^^^^^^^^^^
+TypeError: 'Context' object is not subscriptable
+
+The above exception was the direct cause of the following exception:
+
+[36mray::ClientAppActor.run()[39m (pid=84355, ip=172.17.0.6, actor_id=7b79d1f115ce56f9ce0b146e01000000, repr=<flwr.simulation.ray_transport.ray_actor.ClientAppActor object at 0x7f1d9f7d7a70>)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/simulation/ray_transport/ray_actor.py", line 63, in run
+    raise ClientAppException(str(ex)) from ex
+flwr.client.client_app.ClientAppException: 
+Exception ClientAppException occurred. Message: 'Context' object is not subscriptable
+
+debug | ERROR flwr 2024-11-13 21:53:59,430 | ray_client_proxy.py:107 | [36mray::ClientAppActor.run()[39m (pid=84355, ip=172.17.0.6, actor_id=7b79d1f115ce56f9ce0b146e01000000, repr=<flwr.simulation.ray_transport.ray_actor.ClientAppActor object at 0x7f1d9f7d7a70>)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/client/client_app.py", line 143, in __call__
+    return self._call(message, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/client/client_app.py", line 126, in ffn
+    out_message = handle_legacy_message_from_msgtype(
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/client/message_handler/message_handler.py", line 95, in handle_legacy_message_from_msgtype
+    client = client_fn(context)
+             ^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/client.py", line 137, in client_fn
+    cid = context['partition_id']
+          ~~~~~~~^^^^^^^^^^^^^^^^
+TypeError: 'Context' object is not subscriptable
+
+The above exception was the direct cause of the following exception:
+
+[36mray::ClientAppActor.run()[39m (pid=84355, ip=172.17.0.6, actor_id=7b79d1f115ce56f9ce0b146e01000000, repr=<flwr.simulation.ray_transport.ray_actor.ClientAppActor object at 0x7f1d9f7d7a70>)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/simulation/ray_transport/ray_actor.py", line 63, in run
+    raise ClientAppException(str(ex)) from ex
+flwr.client.client_app.ClientAppException: 
+Exception ClientAppException occurred. Message: 'Context' object is not subscriptable
+debug | ERROR flwr 2024-11-13 21:53:59,430 | app.py:344 | [36mray::ClientAppActor.run()[39m (pid=84355, ip=172.17.0.6, actor_id=7b79d1f115ce56f9ce0b146e01000000, repr=<flwr.simulation.ray_transport.ray_actor.ClientAppActor object at 0x7f1d9f7d7a70>)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/client/client_app.py", line 143, in __call__
+    return self._call(message, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/client/client_app.py", line 126, in ffn
+    out_message = handle_legacy_message_from_msgtype(
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/client/message_handler/message_handler.py", line 95, in handle_legacy_message_from_msgtype
+    client = client_fn(context)
+             ^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/client.py", line 137, in client_fn
+    cid = context['partition_id']
+          ~~~~~~~^^^^^^^^^^^^^^^^
+TypeError: 'Context' object is not subscriptable
+
+The above exception was the direct cause of the following exception:
+
+[36mray::ClientAppActor.run()[39m (pid=84355, ip=172.17.0.6, actor_id=7b79d1f115ce56f9ce0b146e01000000, repr=<flwr.simulation.ray_transport.ray_actor.ClientAppActor object at 0x7f1d9f7d7a70>)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/simulation/ray_transport/ray_actor.py", line 63, in run
+    raise ClientAppException(str(ex)) from ex
+flwr.client.client_app.ClientAppException: 
+Exception ClientAppException occurred. Message: 'Context' object is not subscriptable
+debug | ERROR flwr 2024-11-13 21:53:59,432 | app.py:345 | Traceback (most recent call last):
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/simulation/app.py", line 339, in start_simulation
+    hist = run_fl(
+           ^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/server/server.py", line 492, in run_fl
+    hist, elapsed_time = server.fit(
+                         ^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/server/server.py", line 93, in fit
+    self.parameters = self._get_initial_parameters(server_round=0, timeout=timeout)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/server/server.py", line 284, in _get_initial_parameters
+    get_parameters_res = random_client.get_parameters(
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/simulation/ray_transport/ray_client_proxy.py", line 168, in get_parameters
+    message_out = self._submit_job(message, timeout)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/simulation/ray_transport/ray_client_proxy.py", line 108, in _submit_job
+    raise ex
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/simulation/ray_transport/ray_client_proxy.py", line 94, in _submit_job
+    out_mssg, updated_context = self.actor_pool.get_client_result(
+                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/simulation/ray_transport/ray_actor.py", line 398, in get_client_result
+    return self._fetch_future_result(cid)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/simulation/ray_transport/ray_actor.py", line 279, in _fetch_future_result
+    res_cid, out_mssg, updated_context = ray.get(
+                                         ^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/ray/_private/auto_init_hook.py", line 21, in auto_init_wrapper
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/ray/_private/client_mode_hook.py", line 103, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/ray/_private/worker.py", line 2753, in get
+    values, debugger_breakpoint = worker.get_objects(object_refs, timeout=timeout)
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/ray/_private/worker.py", line 904, in get_objects
+    raise value.as_instanceof_cause()
+ray.exceptions.RayTaskError(ClientAppException): [36mray::ClientAppActor.run()[39m (pid=84355, ip=172.17.0.6, actor_id=7b79d1f115ce56f9ce0b146e01000000, repr=<flwr.simulation.ray_transport.ray_actor.ClientAppActor object at 0x7f1d9f7d7a70>)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/client/client_app.py", line 143, in __call__
+    return self._call(message, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/client/client_app.py", line 126, in ffn
+    out_message = handle_legacy_message_from_msgtype(
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/client/message_handler/message_handler.py", line 95, in handle_legacy_message_from_msgtype
+    client = client_fn(context)
+             ^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/client.py", line 137, in client_fn
+    cid = context['partition_id']
+          ~~~~~~~^^^^^^^^^^^^^^^^
+TypeError: 'Context' object is not subscriptable
+
+The above exception was the direct cause of the following exception:
+
+[36mray::ClientAppActor.run()[39m (pid=84355, ip=172.17.0.6, actor_id=7b79d1f115ce56f9ce0b146e01000000, repr=<flwr.simulation.ray_transport.ray_actor.ClientAppActor object at 0x7f1d9f7d7a70>)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/simulation/ray_transport/ray_actor.py", line 63, in run
+    raise ClientAppException(str(ex)) from ex
+flwr.client.client_app.ClientAppException: 
+Exception ClientAppException occurred. Message: 'Context' object is not subscriptable
+
+debug | ERROR flwr 2024-11-13 21:53:59,432 | app.py:346 | Your simulation crashed :(. This could be because of several reasons. The most common are: 
+	 > Sometimes, issues in the simulation code itself can cause crashes. It's always a good idea to double-check your code for any potential bugs or inconsistencies that might be contributing to the problem. For example: 
+		 - You might be using a class attribute in your clients that hasn't been defined.
+		 - There could be an incorrect method call to a 3rd party library (e.g., PyTorch).
+		 - The return types of methods in your clients/strategies might be incorrect.
+	 > Your system couldn't fit a single VirtualClient: try lowering `client_resources`.
+	 > All the actors in your pool crashed. This could be because: 
+		 - You clients hit an out-of-memory (OOM) error and actors couldn't recover from it. Try launching your simulation with more generous `client_resources` setting (i.e. it seems {'num_cpus': 2, 'num_gpus': 0.2} is not enough for your run). Use fewer concurrent actors. 
+		 - You were running a multi-node simulation and all worker nodes disconnected. The head node might still be alive but cannot accommodate any actor with resources: {'num_cpus': 2, 'num_gpus': 0.2}.
+Take a look at the Flower simulation examples for guidance <https://flower.ai/docs/framework/how-to-run-simulations.html>.
+debug | INFO flwr 2024-11-13 21:54:24,108 | app.py:219 | Starting Flower simulation, config: num_rounds=1000, no round_timeout
+debug | INFO flwr 2024-11-13 21:54:26,487 | app.py:242 | Flower VCE: Ray initialized with resources: {'accelerator_type:G': 1.0, 'node:__internal_head__': 1.0, 'CPU': 30.0, 'object_store_memory': 127506837708.0, 'memory': 589979253555.0, 'node:172.17.0.6': 1.0, 'GPU': 1.0}
+debug | INFO flwr 2024-11-13 21:54:26,487 | app.py:248 | Optimize your simulation with Flower VCE: https://flower.ai/docs/framework/how-to-run-simulations.html
+debug | INFO flwr 2024-11-13 21:54:26,487 | app.py:271 | Flower VCE: Resources for each Virtual Client: {'num_cpus': 2, 'num_gpus': 0.2}
+debug | INFO flwr 2024-11-13 21:54:26,503 | app.py:317 | Flower VCE: Creating VirtualClientEngineActorPool with 5 actors
+debug | INFO flwr 2024-11-13 21:54:26,503 | server.py:92 | [INIT]
+debug | INFO flwr 2024-11-13 21:54:26,503 | server.py:281 | Requesting initial parameters from one random client
+debug | ERROR flwr 2024-11-13 21:54:31,022 | ray_client_proxy.py:106 | Traceback (most recent call last):
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/simulation/ray_transport/ray_client_proxy.py", line 94, in _submit_job
+    out_mssg, updated_context = self.actor_pool.get_client_result(
+                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/simulation/ray_transport/ray_actor.py", line 398, in get_client_result
+    return self._fetch_future_result(cid)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/simulation/ray_transport/ray_actor.py", line 279, in _fetch_future_result
+    res_cid, out_mssg, updated_context = ray.get(
+                                         ^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/ray/_private/auto_init_hook.py", line 21, in auto_init_wrapper
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/ray/_private/client_mode_hook.py", line 103, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/ray/_private/worker.py", line 2753, in get
+    values, debugger_breakpoint = worker.get_objects(object_refs, timeout=timeout)
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/ray/_private/worker.py", line 904, in get_objects
+    raise value.as_instanceof_cause()
+ray.exceptions.RayTaskError(ClientAppException): [36mray::ClientAppActor.run()[39m (pid=87647, ip=172.17.0.6, actor_id=81873339a0d845a39c3feca801000000, repr=<flwr.simulation.ray_transport.ray_actor.ClientAppActor object at 0x7fc159c4b3b0>)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/client/client_app.py", line 143, in __call__
+    return self._call(message, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/client/client_app.py", line 126, in ffn
+    out_message = handle_legacy_message_from_msgtype(
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/client/message_handler/message_handler.py", line 95, in handle_legacy_message_from_msgtype
+    client = client_fn(context)
+             ^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/client.py", line 138, in client_fn
+    cid = context['partition_id']
+          ~~~~~~~^^^^^^^^^^^^^^^^
+TypeError: 'Context' object is not subscriptable
+
+The above exception was the direct cause of the following exception:
+
+[36mray::ClientAppActor.run()[39m (pid=87647, ip=172.17.0.6, actor_id=81873339a0d845a39c3feca801000000, repr=<flwr.simulation.ray_transport.ray_actor.ClientAppActor object at 0x7fc159c4b3b0>)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/simulation/ray_transport/ray_actor.py", line 63, in run
+    raise ClientAppException(str(ex)) from ex
+flwr.client.client_app.ClientAppException: 
+Exception ClientAppException occurred. Message: 'Context' object is not subscriptable
+
+debug | ERROR flwr 2024-11-13 21:54:31,022 | ray_client_proxy.py:107 | [36mray::ClientAppActor.run()[39m (pid=87647, ip=172.17.0.6, actor_id=81873339a0d845a39c3feca801000000, repr=<flwr.simulation.ray_transport.ray_actor.ClientAppActor object at 0x7fc159c4b3b0>)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/client/client_app.py", line 143, in __call__
+    return self._call(message, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/client/client_app.py", line 126, in ffn
+    out_message = handle_legacy_message_from_msgtype(
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/client/message_handler/message_handler.py", line 95, in handle_legacy_message_from_msgtype
+    client = client_fn(context)
+             ^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/client.py", line 138, in client_fn
+    cid = context['partition_id']
+          ~~~~~~~^^^^^^^^^^^^^^^^
+TypeError: 'Context' object is not subscriptable
+
+The above exception was the direct cause of the following exception:
+
+[36mray::ClientAppActor.run()[39m (pid=87647, ip=172.17.0.6, actor_id=81873339a0d845a39c3feca801000000, repr=<flwr.simulation.ray_transport.ray_actor.ClientAppActor object at 0x7fc159c4b3b0>)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/simulation/ray_transport/ray_actor.py", line 63, in run
+    raise ClientAppException(str(ex)) from ex
+flwr.client.client_app.ClientAppException: 
+Exception ClientAppException occurred. Message: 'Context' object is not subscriptable
+debug | ERROR flwr 2024-11-13 21:54:31,022 | app.py:344 | [36mray::ClientAppActor.run()[39m (pid=87647, ip=172.17.0.6, actor_id=81873339a0d845a39c3feca801000000, repr=<flwr.simulation.ray_transport.ray_actor.ClientAppActor object at 0x7fc159c4b3b0>)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/client/client_app.py", line 143, in __call__
+    return self._call(message, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/client/client_app.py", line 126, in ffn
+    out_message = handle_legacy_message_from_msgtype(
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/client/message_handler/message_handler.py", line 95, in handle_legacy_message_from_msgtype
+    client = client_fn(context)
+             ^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/client.py", line 138, in client_fn
+    cid = context['partition_id']
+          ~~~~~~~^^^^^^^^^^^^^^^^
+TypeError: 'Context' object is not subscriptable
+
+The above exception was the direct cause of the following exception:
+
+[36mray::ClientAppActor.run()[39m (pid=87647, ip=172.17.0.6, actor_id=81873339a0d845a39c3feca801000000, repr=<flwr.simulation.ray_transport.ray_actor.ClientAppActor object at 0x7fc159c4b3b0>)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/simulation/ray_transport/ray_actor.py", line 63, in run
+    raise ClientAppException(str(ex)) from ex
+flwr.client.client_app.ClientAppException: 
+Exception ClientAppException occurred. Message: 'Context' object is not subscriptable
+debug | ERROR flwr 2024-11-13 21:54:31,024 | app.py:345 | Traceback (most recent call last):
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/simulation/app.py", line 339, in start_simulation
+    hist = run_fl(
+           ^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/server/server.py", line 492, in run_fl
+    hist, elapsed_time = server.fit(
+                         ^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/server/server.py", line 93, in fit
+    self.parameters = self._get_initial_parameters(server_round=0, timeout=timeout)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/server/server.py", line 284, in _get_initial_parameters
+    get_parameters_res = random_client.get_parameters(
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/simulation/ray_transport/ray_client_proxy.py", line 168, in get_parameters
+    message_out = self._submit_job(message, timeout)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/simulation/ray_transport/ray_client_proxy.py", line 108, in _submit_job
+    raise ex
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/simulation/ray_transport/ray_client_proxy.py", line 94, in _submit_job
+    out_mssg, updated_context = self.actor_pool.get_client_result(
+                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/simulation/ray_transport/ray_actor.py", line 398, in get_client_result
+    return self._fetch_future_result(cid)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/simulation/ray_transport/ray_actor.py", line 279, in _fetch_future_result
+    res_cid, out_mssg, updated_context = ray.get(
+                                         ^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/ray/_private/auto_init_hook.py", line 21, in auto_init_wrapper
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/ray/_private/client_mode_hook.py", line 103, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/ray/_private/worker.py", line 2753, in get
+    values, debugger_breakpoint = worker.get_objects(object_refs, timeout=timeout)
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/ray/_private/worker.py", line 904, in get_objects
+    raise value.as_instanceof_cause()
+ray.exceptions.RayTaskError(ClientAppException): [36mray::ClientAppActor.run()[39m (pid=87647, ip=172.17.0.6, actor_id=81873339a0d845a39c3feca801000000, repr=<flwr.simulation.ray_transport.ray_actor.ClientAppActor object at 0x7fc159c4b3b0>)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/client/client_app.py", line 143, in __call__
+    return self._call(message, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/client/client_app.py", line 126, in ffn
+    out_message = handle_legacy_message_from_msgtype(
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/client/message_handler/message_handler.py", line 95, in handle_legacy_message_from_msgtype
+    client = client_fn(context)
+             ^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/client.py", line 138, in client_fn
+    cid = context['partition_id']
+          ~~~~~~~^^^^^^^^^^^^^^^^
+TypeError: 'Context' object is not subscriptable
+
+The above exception was the direct cause of the following exception:
+
+[36mray::ClientAppActor.run()[39m (pid=87647, ip=172.17.0.6, actor_id=81873339a0d845a39c3feca801000000, repr=<flwr.simulation.ray_transport.ray_actor.ClientAppActor object at 0x7fc159c4b3b0>)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/simulation/ray_transport/ray_actor.py", line 63, in run
+    raise ClientAppException(str(ex)) from ex
+flwr.client.client_app.ClientAppException: 
+Exception ClientAppException occurred. Message: 'Context' object is not subscriptable
+
+debug | ERROR flwr 2024-11-13 21:54:31,024 | app.py:346 | Your simulation crashed :(. This could be because of several reasons. The most common are: 
+	 > Sometimes, issues in the simulation code itself can cause crashes. It's always a good idea to double-check your code for any potential bugs or inconsistencies that might be contributing to the problem. For example: 
+		 - You might be using a class attribute in your clients that hasn't been defined.
+		 - There could be an incorrect method call to a 3rd party library (e.g., PyTorch).
+		 - The return types of methods in your clients/strategies might be incorrect.
+	 > Your system couldn't fit a single VirtualClient: try lowering `client_resources`.
+	 > All the actors in your pool crashed. This could be because: 
+		 - You clients hit an out-of-memory (OOM) error and actors couldn't recover from it. Try launching your simulation with more generous `client_resources` setting (i.e. it seems {'num_cpus': 2, 'num_gpus': 0.2} is not enough for your run). Use fewer concurrent actors. 
+		 - You were running a multi-node simulation and all worker nodes disconnected. The head node might still be alive but cannot accommodate any actor with resources: {'num_cpus': 2, 'num_gpus': 0.2}.
+Take a look at the Flower simulation examples for guidance <https://flower.ai/docs/framework/how-to-run-simulations.html>.
+debug | INFO flwr 2024-11-13 21:56:33,659 | app.py:219 | Starting Flower simulation, config: num_rounds=1000, no round_timeout
+debug | INFO flwr 2024-11-13 21:56:35,975 | app.py:242 | Flower VCE: Ray initialized with resources: {'accelerator_type:G': 1.0, 'node:__internal_head__': 1.0, 'CPU': 30.0, 'object_store_memory': 127506837708.0, 'memory': 589975247667.0, 'GPU': 1.0, 'node:172.17.0.6': 1.0}
+debug | INFO flwr 2024-11-13 21:56:35,976 | app.py:248 | Optimize your simulation with Flower VCE: https://flower.ai/docs/framework/how-to-run-simulations.html
+debug | INFO flwr 2024-11-13 21:56:35,976 | app.py:271 | Flower VCE: Resources for each Virtual Client: {'num_cpus': 2, 'num_gpus': 0.2}
+debug | INFO flwr 2024-11-13 21:56:36,043 | app.py:317 | Flower VCE: Creating VirtualClientEngineActorPool with 5 actors
+debug | INFO flwr 2024-11-13 21:56:36,043 | server.py:92 | [INIT]
+debug | INFO flwr 2024-11-13 21:56:36,043 | server.py:281 | Requesting initial parameters from one random client
+debug | ERROR flwr 2024-11-13 21:56:40,776 | ray_client_proxy.py:106 | Traceback (most recent call last):
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/simulation/ray_transport/ray_client_proxy.py", line 94, in _submit_job
+    out_mssg, updated_context = self.actor_pool.get_client_result(
+                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/simulation/ray_transport/ray_actor.py", line 398, in get_client_result
+    return self._fetch_future_result(cid)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/simulation/ray_transport/ray_actor.py", line 279, in _fetch_future_result
+    res_cid, out_mssg, updated_context = ray.get(
+                                         ^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/ray/_private/auto_init_hook.py", line 21, in auto_init_wrapper
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/ray/_private/client_mode_hook.py", line 103, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/ray/_private/worker.py", line 2753, in get
+    values, debugger_breakpoint = worker.get_objects(object_refs, timeout=timeout)
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/ray/_private/worker.py", line 904, in get_objects
+    raise value.as_instanceof_cause()
+ray.exceptions.RayTaskError(ClientAppException): [36mray::ClientAppActor.run()[39m (pid=90933, ip=172.17.0.6, actor_id=5576a8c22ffc84ca1b3b9db401000000, repr=<flwr.simulation.ray_transport.ray_actor.ClientAppActor object at 0x7f1306a93140>)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/client/client_app.py", line 143, in __call__
+    return self._call(message, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/client/client_app.py", line 126, in ffn
+    out_message = handle_legacy_message_from_msgtype(
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/client/message_handler/message_handler.py", line 95, in handle_legacy_message_from_msgtype
+    client = client_fn(context)
+             ^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/client.py", line 138, in client_fn
+    cid = context['partition_id']
+          ~~~~~~~^^^^^^^^^^^^^^^^
+TypeError: 'Context' object is not subscriptable
+
+The above exception was the direct cause of the following exception:
+
+[36mray::ClientAppActor.run()[39m (pid=90933, ip=172.17.0.6, actor_id=5576a8c22ffc84ca1b3b9db401000000, repr=<flwr.simulation.ray_transport.ray_actor.ClientAppActor object at 0x7f1306a93140>)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/simulation/ray_transport/ray_actor.py", line 63, in run
+    raise ClientAppException(str(ex)) from ex
+flwr.client.client_app.ClientAppException: 
+Exception ClientAppException occurred. Message: 'Context' object is not subscriptable
+
+debug | ERROR flwr 2024-11-13 21:56:40,776 | ray_client_proxy.py:107 | [36mray::ClientAppActor.run()[39m (pid=90933, ip=172.17.0.6, actor_id=5576a8c22ffc84ca1b3b9db401000000, repr=<flwr.simulation.ray_transport.ray_actor.ClientAppActor object at 0x7f1306a93140>)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/client/client_app.py", line 143, in __call__
+    return self._call(message, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/client/client_app.py", line 126, in ffn
+    out_message = handle_legacy_message_from_msgtype(
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/client/message_handler/message_handler.py", line 95, in handle_legacy_message_from_msgtype
+    client = client_fn(context)
+             ^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/client.py", line 138, in client_fn
+    cid = context['partition_id']
+          ~~~~~~~^^^^^^^^^^^^^^^^
+TypeError: 'Context' object is not subscriptable
+
+The above exception was the direct cause of the following exception:
+
+[36mray::ClientAppActor.run()[39m (pid=90933, ip=172.17.0.6, actor_id=5576a8c22ffc84ca1b3b9db401000000, repr=<flwr.simulation.ray_transport.ray_actor.ClientAppActor object at 0x7f1306a93140>)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/simulation/ray_transport/ray_actor.py", line 63, in run
+    raise ClientAppException(str(ex)) from ex
+flwr.client.client_app.ClientAppException: 
+Exception ClientAppException occurred. Message: 'Context' object is not subscriptable
+debug | ERROR flwr 2024-11-13 21:56:40,776 | app.py:344 | [36mray::ClientAppActor.run()[39m (pid=90933, ip=172.17.0.6, actor_id=5576a8c22ffc84ca1b3b9db401000000, repr=<flwr.simulation.ray_transport.ray_actor.ClientAppActor object at 0x7f1306a93140>)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/client/client_app.py", line 143, in __call__
+    return self._call(message, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/client/client_app.py", line 126, in ffn
+    out_message = handle_legacy_message_from_msgtype(
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/client/message_handler/message_handler.py", line 95, in handle_legacy_message_from_msgtype
+    client = client_fn(context)
+             ^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/client.py", line 138, in client_fn
+    cid = context['partition_id']
+          ~~~~~~~^^^^^^^^^^^^^^^^
+TypeError: 'Context' object is not subscriptable
+
+The above exception was the direct cause of the following exception:
+
+[36mray::ClientAppActor.run()[39m (pid=90933, ip=172.17.0.6, actor_id=5576a8c22ffc84ca1b3b9db401000000, repr=<flwr.simulation.ray_transport.ray_actor.ClientAppActor object at 0x7f1306a93140>)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/simulation/ray_transport/ray_actor.py", line 63, in run
+    raise ClientAppException(str(ex)) from ex
+flwr.client.client_app.ClientAppException: 
+Exception ClientAppException occurred. Message: 'Context' object is not subscriptable
+debug | ERROR flwr 2024-11-13 21:56:40,778 | app.py:345 | Traceback (most recent call last):
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/simulation/app.py", line 339, in start_simulation
+    hist = run_fl(
+           ^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/server/server.py", line 492, in run_fl
+    hist, elapsed_time = server.fit(
+                         ^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/server/server.py", line 93, in fit
+    self.parameters = self._get_initial_parameters(server_round=0, timeout=timeout)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/server/server.py", line 284, in _get_initial_parameters
+    get_parameters_res = random_client.get_parameters(
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/simulation/ray_transport/ray_client_proxy.py", line 168, in get_parameters
+    message_out = self._submit_job(message, timeout)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/simulation/ray_transport/ray_client_proxy.py", line 108, in _submit_job
+    raise ex
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/simulation/ray_transport/ray_client_proxy.py", line 94, in _submit_job
+    out_mssg, updated_context = self.actor_pool.get_client_result(
+                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/simulation/ray_transport/ray_actor.py", line 398, in get_client_result
+    return self._fetch_future_result(cid)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/simulation/ray_transport/ray_actor.py", line 279, in _fetch_future_result
+    res_cid, out_mssg, updated_context = ray.get(
+                                         ^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/ray/_private/auto_init_hook.py", line 21, in auto_init_wrapper
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/ray/_private/client_mode_hook.py", line 103, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/ray/_private/worker.py", line 2753, in get
+    values, debugger_breakpoint = worker.get_objects(object_refs, timeout=timeout)
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/ray/_private/worker.py", line 904, in get_objects
+    raise value.as_instanceof_cause()
+ray.exceptions.RayTaskError(ClientAppException): [36mray::ClientAppActor.run()[39m (pid=90933, ip=172.17.0.6, actor_id=5576a8c22ffc84ca1b3b9db401000000, repr=<flwr.simulation.ray_transport.ray_actor.ClientAppActor object at 0x7f1306a93140>)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/client/client_app.py", line 143, in __call__
+    return self._call(message, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/client/client_app.py", line 126, in ffn
+    out_message = handle_legacy_message_from_msgtype(
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/client/message_handler/message_handler.py", line 95, in handle_legacy_message_from_msgtype
+    client = client_fn(context)
+             ^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/client.py", line 138, in client_fn
+    cid = context['partition_id']
+          ~~~~~~~^^^^^^^^^^^^^^^^
+TypeError: 'Context' object is not subscriptable
+
+The above exception was the direct cause of the following exception:
+
+[36mray::ClientAppActor.run()[39m (pid=90933, ip=172.17.0.6, actor_id=5576a8c22ffc84ca1b3b9db401000000, repr=<flwr.simulation.ray_transport.ray_actor.ClientAppActor object at 0x7f1306a93140>)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/simulation/ray_transport/ray_actor.py", line 63, in run
+    raise ClientAppException(str(ex)) from ex
+flwr.client.client_app.ClientAppException: 
+Exception ClientAppException occurred. Message: 'Context' object is not subscriptable
+
+debug | ERROR flwr 2024-11-13 21:56:40,778 | app.py:346 | Your simulation crashed :(. This could be because of several reasons. The most common are: 
+	 > Sometimes, issues in the simulation code itself can cause crashes. It's always a good idea to double-check your code for any potential bugs or inconsistencies that might be contributing to the problem. For example: 
+		 - You might be using a class attribute in your clients that hasn't been defined.
+		 - There could be an incorrect method call to a 3rd party library (e.g., PyTorch).
+		 - The return types of methods in your clients/strategies might be incorrect.
+	 > Your system couldn't fit a single VirtualClient: try lowering `client_resources`.
+	 > All the actors in your pool crashed. This could be because: 
+		 - You clients hit an out-of-memory (OOM) error and actors couldn't recover from it. Try launching your simulation with more generous `client_resources` setting (i.e. it seems {'num_cpus': 2, 'num_gpus': 0.2} is not enough for your run). Use fewer concurrent actors. 
+		 - You were running a multi-node simulation and all worker nodes disconnected. The head node might still be alive but cannot accommodate any actor with resources: {'num_cpus': 2, 'num_gpus': 0.2}.
+Take a look at the Flower simulation examples for guidance <https://flower.ai/docs/framework/how-to-run-simulations.html>.
+debug | INFO flwr 2024-11-13 22:01:11,162 | app.py:219 | Starting Flower simulation, config: num_rounds=1000, no round_timeout
+debug | INFO flwr 2024-11-13 22:01:13,589 | app.py:242 | Flower VCE: Ray initialized with resources: {'accelerator_type:G': 1.0, 'node:__internal_head__': 1.0, 'CPU': 30.0, 'object_store_memory': 127506837708.0, 'memory': 589974793011.0, 'node:172.17.0.6': 1.0, 'GPU': 1.0}
+debug | INFO flwr 2024-11-13 22:01:13,589 | app.py:248 | Optimize your simulation with Flower VCE: https://flower.ai/docs/framework/how-to-run-simulations.html
+debug | INFO flwr 2024-11-13 22:01:13,589 | app.py:271 | Flower VCE: Resources for each Virtual Client: {'num_cpus': 2, 'num_gpus': 0.2}
+debug | INFO flwr 2024-11-13 22:01:13,607 | app.py:317 | Flower VCE: Creating VirtualClientEngineActorPool with 5 actors
+debug | INFO flwr 2024-11-13 22:01:13,607 | server.py:92 | [INIT]
+debug | INFO flwr 2024-11-13 22:01:13,607 | server.py:281 | Requesting initial parameters from one random client
+debug | ERROR flwr 2024-11-13 22:01:18,227 | ray_client_proxy.py:106 | Traceback (most recent call last):
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/simulation/ray_transport/ray_client_proxy.py", line 94, in _submit_job
+    out_mssg, updated_context = self.actor_pool.get_client_result(
+                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/simulation/ray_transport/ray_actor.py", line 398, in get_client_result
+    return self._fetch_future_result(cid)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/simulation/ray_transport/ray_actor.py", line 279, in _fetch_future_result
+    res_cid, out_mssg, updated_context = ray.get(
+                                         ^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/ray/_private/auto_init_hook.py", line 21, in auto_init_wrapper
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/ray/_private/client_mode_hook.py", line 103, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/ray/_private/worker.py", line 2753, in get
+    values, debugger_breakpoint = worker.get_objects(object_refs, timeout=timeout)
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/ray/_private/worker.py", line 904, in get_objects
+    raise value.as_instanceof_cause()
+ray.exceptions.RayTaskError(ClientAppException): [36mray::ClientAppActor.run()[39m (pid=94325, ip=172.17.0.6, actor_id=ca810bbdf9a290821a88689601000000, repr=<flwr.simulation.ray_transport.ray_actor.ClientAppActor object at 0x7f9bb2b373e0>)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/client/client_app.py", line 143, in __call__
+    return self._call(message, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/client/client_app.py", line 126, in ffn
+    out_message = handle_legacy_message_from_msgtype(
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/client/message_handler/message_handler.py", line 95, in handle_legacy_message_from_msgtype
+    client = client_fn(context)
+             ^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/client.py", line 138, in client_fn
+    cid = context.node_config['partition_id']
+          ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+KeyError: 'partition_id'
+
+The above exception was the direct cause of the following exception:
+
+[36mray::ClientAppActor.run()[39m (pid=94325, ip=172.17.0.6, actor_id=ca810bbdf9a290821a88689601000000, repr=<flwr.simulation.ray_transport.ray_actor.ClientAppActor object at 0x7f9bb2b373e0>)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/simulation/ray_transport/ray_actor.py", line 63, in run
+    raise ClientAppException(str(ex)) from ex
+flwr.client.client_app.ClientAppException: 
+Exception ClientAppException occurred. Message: 'partition_id'
+
+debug | ERROR flwr 2024-11-13 22:01:18,227 | ray_client_proxy.py:107 | [36mray::ClientAppActor.run()[39m (pid=94325, ip=172.17.0.6, actor_id=ca810bbdf9a290821a88689601000000, repr=<flwr.simulation.ray_transport.ray_actor.ClientAppActor object at 0x7f9bb2b373e0>)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/client/client_app.py", line 143, in __call__
+    return self._call(message, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/client/client_app.py", line 126, in ffn
+    out_message = handle_legacy_message_from_msgtype(
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/client/message_handler/message_handler.py", line 95, in handle_legacy_message_from_msgtype
+    client = client_fn(context)
+             ^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/client.py", line 138, in client_fn
+    cid = context.node_config['partition_id']
+          ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+KeyError: 'partition_id'
+
+The above exception was the direct cause of the following exception:
+
+[36mray::ClientAppActor.run()[39m (pid=94325, ip=172.17.0.6, actor_id=ca810bbdf9a290821a88689601000000, repr=<flwr.simulation.ray_transport.ray_actor.ClientAppActor object at 0x7f9bb2b373e0>)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/simulation/ray_transport/ray_actor.py", line 63, in run
+    raise ClientAppException(str(ex)) from ex
+flwr.client.client_app.ClientAppException: 
+Exception ClientAppException occurred. Message: 'partition_id'
+debug | ERROR flwr 2024-11-13 22:01:18,227 | app.py:344 | [36mray::ClientAppActor.run()[39m (pid=94325, ip=172.17.0.6, actor_id=ca810bbdf9a290821a88689601000000, repr=<flwr.simulation.ray_transport.ray_actor.ClientAppActor object at 0x7f9bb2b373e0>)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/client/client_app.py", line 143, in __call__
+    return self._call(message, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/client/client_app.py", line 126, in ffn
+    out_message = handle_legacy_message_from_msgtype(
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/client/message_handler/message_handler.py", line 95, in handle_legacy_message_from_msgtype
+    client = client_fn(context)
+             ^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/client.py", line 138, in client_fn
+    cid = context.node_config['partition_id']
+          ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+KeyError: 'partition_id'
+
+The above exception was the direct cause of the following exception:
+
+[36mray::ClientAppActor.run()[39m (pid=94325, ip=172.17.0.6, actor_id=ca810bbdf9a290821a88689601000000, repr=<flwr.simulation.ray_transport.ray_actor.ClientAppActor object at 0x7f9bb2b373e0>)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/simulation/ray_transport/ray_actor.py", line 63, in run
+    raise ClientAppException(str(ex)) from ex
+flwr.client.client_app.ClientAppException: 
+Exception ClientAppException occurred. Message: 'partition_id'
+debug | ERROR flwr 2024-11-13 22:01:18,229 | app.py:345 | Traceback (most recent call last):
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/simulation/app.py", line 339, in start_simulation
+    hist = run_fl(
+           ^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/server/server.py", line 492, in run_fl
+    hist, elapsed_time = server.fit(
+                         ^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/server/server.py", line 93, in fit
+    self.parameters = self._get_initial_parameters(server_round=0, timeout=timeout)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/server/server.py", line 284, in _get_initial_parameters
+    get_parameters_res = random_client.get_parameters(
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/simulation/ray_transport/ray_client_proxy.py", line 168, in get_parameters
+    message_out = self._submit_job(message, timeout)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/simulation/ray_transport/ray_client_proxy.py", line 108, in _submit_job
+    raise ex
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/simulation/ray_transport/ray_client_proxy.py", line 94, in _submit_job
+    out_mssg, updated_context = self.actor_pool.get_client_result(
+                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/simulation/ray_transport/ray_actor.py", line 398, in get_client_result
+    return self._fetch_future_result(cid)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/simulation/ray_transport/ray_actor.py", line 279, in _fetch_future_result
+    res_cid, out_mssg, updated_context = ray.get(
+                                         ^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/ray/_private/auto_init_hook.py", line 21, in auto_init_wrapper
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/ray/_private/client_mode_hook.py", line 103, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/ray/_private/worker.py", line 2753, in get
+    values, debugger_breakpoint = worker.get_objects(object_refs, timeout=timeout)
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/ray/_private/worker.py", line 904, in get_objects
+    raise value.as_instanceof_cause()
+ray.exceptions.RayTaskError(ClientAppException): [36mray::ClientAppActor.run()[39m (pid=94325, ip=172.17.0.6, actor_id=ca810bbdf9a290821a88689601000000, repr=<flwr.simulation.ray_transport.ray_actor.ClientAppActor object at 0x7f9bb2b373e0>)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/client/client_app.py", line 143, in __call__
+    return self._call(message, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/client/client_app.py", line 126, in ffn
+    out_message = handle_legacy_message_from_msgtype(
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/client/message_handler/message_handler.py", line 95, in handle_legacy_message_from_msgtype
+    client = client_fn(context)
+             ^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/client.py", line 138, in client_fn
+    cid = context.node_config['partition_id']
+          ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+KeyError: 'partition_id'
+
+The above exception was the direct cause of the following exception:
+
+[36mray::ClientAppActor.run()[39m (pid=94325, ip=172.17.0.6, actor_id=ca810bbdf9a290821a88689601000000, repr=<flwr.simulation.ray_transport.ray_actor.ClientAppActor object at 0x7f9bb2b373e0>)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/simulation/ray_transport/ray_actor.py", line 63, in run
+    raise ClientAppException(str(ex)) from ex
+flwr.client.client_app.ClientAppException: 
+Exception ClientAppException occurred. Message: 'partition_id'
+
+debug | ERROR flwr 2024-11-13 22:01:18,229 | app.py:346 | Your simulation crashed :(. This could be because of several reasons. The most common are: 
+	 > Sometimes, issues in the simulation code itself can cause crashes. It's always a good idea to double-check your code for any potential bugs or inconsistencies that might be contributing to the problem. For example: 
+		 - You might be using a class attribute in your clients that hasn't been defined.
+		 - There could be an incorrect method call to a 3rd party library (e.g., PyTorch).
+		 - The return types of methods in your clients/strategies might be incorrect.
+	 > Your system couldn't fit a single VirtualClient: try lowering `client_resources`.
+	 > All the actors in your pool crashed. This could be because: 
+		 - You clients hit an out-of-memory (OOM) error and actors couldn't recover from it. Try launching your simulation with more generous `client_resources` setting (i.e. it seems {'num_cpus': 2, 'num_gpus': 0.2} is not enough for your run). Use fewer concurrent actors. 
+		 - You were running a multi-node simulation and all worker nodes disconnected. The head node might still be alive but cannot accommodate any actor with resources: {'num_cpus': 2, 'num_gpus': 0.2}.
+Take a look at the Flower simulation examples for guidance <https://flower.ai/docs/framework/how-to-run-simulations.html>.
+debug | INFO flwr 2024-11-13 22:02:12,139 | app.py:219 | Starting Flower simulation, config: num_rounds=1000, no round_timeout
+debug | INFO flwr 2024-11-13 22:02:14,539 | app.py:242 | Flower VCE: Ray initialized with resources: {'accelerator_type:G': 1.0, 'node:__internal_head__': 1.0, 'CPU': 30.0, 'object_store_memory': 127506837708.0, 'memory': 589972077363.0, 'GPU': 1.0, 'node:172.17.0.6': 1.0}
+debug | INFO flwr 2024-11-13 22:02:14,539 | app.py:248 | Optimize your simulation with Flower VCE: https://flower.ai/docs/framework/how-to-run-simulations.html
+debug | INFO flwr 2024-11-13 22:02:14,539 | app.py:271 | Flower VCE: Resources for each Virtual Client: {'num_cpus': 2, 'num_gpus': 0.2}
+debug | INFO flwr 2024-11-13 22:02:14,557 | app.py:317 | Flower VCE: Creating VirtualClientEngineActorPool with 5 actors
+debug | INFO flwr 2024-11-13 22:02:14,557 | server.py:92 | [INIT]
+debug | INFO flwr 2024-11-13 22:02:14,557 | server.py:281 | Requesting initial parameters from one random client
+debug | INFO flwr 2024-11-13 22:02:20,828 | server.py:288 | Received initial parameters from one random client
+debug | INFO flwr 2024-11-13 22:02:20,828 | server.py:94 | Starting evaluation of initial global parameters
+debug | INFO flwr 2024-11-13 22:02:20,828 | server.py:106 | Evaluation returned no results (`None`)
+debug | INFO flwr 2024-11-13 22:02:20,828 | server.py:112 | 
+debug | INFO flwr 2024-11-13 22:02:20,828 | server.py:113 | [ROUND 1]
+debug | INFO flwr 2024-11-13 22:02:20,828 | server.py:226 | configure_fit: strategy sampled 5 clients (out of 5)
+debug | INFO flwr 2024-11-13 22:03:35,733 | app.py:219 | Starting Flower simulation, config: num_rounds=1000, no round_timeout
+debug | INFO flwr 2024-11-13 22:03:38,042 | app.py:242 | Flower VCE: Ray initialized with resources: {'accelerator_type:G': 1.0, 'node:__internal_head__': 1.0, 'CPU': 30.0, 'memory': 589818980761.0, 'object_store_memory': 126432858726.0, 'GPU': 1.0, 'node:172.17.0.6': 1.0}
+debug | INFO flwr 2024-11-13 22:03:38,042 | app.py:248 | Optimize your simulation with Flower VCE: https://flower.ai/docs/framework/how-to-run-simulations.html
+debug | INFO flwr 2024-11-13 22:03:38,042 | app.py:271 | Flower VCE: Resources for each Virtual Client: {'num_cpus': 2, 'num_gpus': 0.2}
+debug | INFO flwr 2024-11-13 22:03:38,119 | app.py:317 | Flower VCE: Creating VirtualClientEngineActorPool with 5 actors
+debug | INFO flwr 2024-11-13 22:03:38,120 | server.py:92 | [INIT]
+debug | INFO flwr 2024-11-13 22:03:38,120 | server.py:281 | Requesting initial parameters from one random client
+debug | INFO flwr 2024-11-13 22:03:43,887 | server.py:288 | Received initial parameters from one random client
+debug | INFO flwr 2024-11-13 22:03:43,887 | server.py:94 | Starting evaluation of initial global parameters
+debug | INFO flwr 2024-11-13 22:03:43,887 | server.py:106 | Evaluation returned no results (`None`)
+debug | INFO flwr 2024-11-13 22:03:43,887 | server.py:112 | 
+debug | INFO flwr 2024-11-13 22:03:43,887 | server.py:113 | [ROUND 1]
+debug | INFO flwr 2024-11-13 22:03:43,887 | server.py:226 | configure_fit: strategy sampled 5 clients (out of 5)
+debug | INFO flwr 2024-11-13 22:04:17,744 | server.py:240 | aggregate_fit: received 5 results and 0 failures
+debug | WARNING flwr 2024-11-13 22:04:18,303 | fedavg.py:252 | No fit_metrics_aggregation_fn provided
+debug | ERROR flwr 2024-11-13 22:04:24,342 | app.py:344 | calculate_metrics() missing 1 required positional argument: 'round'
+debug | ERROR flwr 2024-11-13 22:04:24,345 | app.py:345 | Traceback (most recent call last):
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/simulation/app.py", line 339, in start_simulation
+    hist = run_fl(
+           ^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/server/server.py", line 492, in run_fl
+    hist, elapsed_time = server.fit(
+                         ^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/server/server.py", line 115, in fit
+    res_fit = self.fit_round(
+              ^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/venv/lib/python3.12/site-packages/flwr/server/server.py", line 251, in fit_round
+    ] = self.strategy.aggregate_fit(server_round, results, failures)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/fedSSL-research/main.py", line 96, in aggregate_fit
+    centralized_eval.calculate_metrics(gb_simclr)
+TypeError: calculate_metrics() missing 1 required positional argument: 'round'
+
+debug | ERROR flwr 2024-11-13 22:04:24,345 | app.py:346 | Your simulation crashed :(. This could be because of several reasons. The most common are: 
+	 > Sometimes, issues in the simulation code itself can cause crashes. It's always a good idea to double-check your code for any potential bugs or inconsistencies that might be contributing to the problem. For example: 
+		 - You might be using a class attribute in your clients that hasn't been defined.
+		 - There could be an incorrect method call to a 3rd party library (e.g., PyTorch).
+		 - The return types of methods in your clients/strategies might be incorrect.
+	 > Your system couldn't fit a single VirtualClient: try lowering `client_resources`.
+	 > All the actors in your pool crashed. This could be because: 
+		 - You clients hit an out-of-memory (OOM) error and actors couldn't recover from it. Try launching your simulation with more generous `client_resources` setting (i.e. it seems {'num_cpus': 2, 'num_gpus': 0.2} is not enough for your run). Use fewer concurrent actors. 
+		 - You were running a multi-node simulation and all worker nodes disconnected. The head node might still be alive but cannot accommodate any actor with resources: {'num_cpus': 2, 'num_gpus': 0.2}.
+Take a look at the Flower simulation examples for guidance <https://flower.ai/docs/framework/how-to-run-simulations.html>.

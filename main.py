@@ -1,6 +1,8 @@
 import flwr as fl
 from flwr.server.strategy import FedAvg
 import torch
+from torch.utils.data import DataLoader
+
 import torch.nn as nn
 import numpy as np
 from typing import Dict, Optional, Tuple, List, Union
@@ -91,7 +93,7 @@ class SaveModelStrategy(fl.server.strategy.FedAvg):
                 
             
             if server_round % 5 == 0 or server_round == 1:
-                centralized_eval.calculate_metrics(gb_simclr)
+                centralized_eval.calculate_metrics(gb_simclr, server_round)
                 
 
         return aggregated_parameters, aggregated_metrics
@@ -124,7 +126,7 @@ if __name__ == "__main__":
     print('CPU ALLOC:', cpu_alloc)
     
     #NO GPU
-    gpu_alloc = 0
+    # gpu_alloc = 0
     
     client_resources = {
         "num_cpus": cpu_alloc,
@@ -140,9 +142,21 @@ if __name__ == "__main__":
     
         
     fds = utils.get_anchored_fds(NUM_CLIENTS, NUM_ANCHORS)
-    anchor_data = utils.load_partition(fds, NUM_CLIENTS)
+    anchor_data, _ = utils.load_partition(fds, NUM_CLIENTS, split = 'train', apply_augment = False)
+    test_data, _ = utils.load_partition(fds, 0, split = 'test', apply_augment = False)
     
-    centralized_eval.init(anchor_data)
+    
+    #get batch
+    
+    dataloader = DataLoader(dataset=anchor_data, batch_size = NUM_ANCHORS)
+
+    for batch in dataloader:
+        anchor_data = batch['img']
+        
+    print(type(anchor_data))
+
+    
+    centralized_eval.init(anchor_data, test_data)
     
     fl.simulation.start_simulation(
         client_fn=client.get_client_fn(fds, useResnet18, NUM_CLIENTS),

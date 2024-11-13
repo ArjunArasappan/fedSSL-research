@@ -1,4 +1,5 @@
 import flwr as fl
+from flwr.common import Context
 from collections import OrderedDict
 import torch
 import torch.nn as nn
@@ -133,7 +134,8 @@ def get_client_fn(fds, useResnet18, num_clients):
     
     
 
-    def client_fn(cid):
+    def client_fn(context: Context):
+        cid = context.node_config['partition-id']
         clientID = int(cid)
         
         train, test = utils.load_partition(fds, clientID, client_test_split = 0)
