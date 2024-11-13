@@ -4,7 +4,7 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader
 import utils
-from model import SimCLR, SimCLRPredictor
+from fed_learning.model import SimCLR, SimCLRPredictor
 import os, glob
 
 
@@ -46,7 +46,7 @@ def load_model(simclr_predictor):
     simclr = SimCLR(DEVICE, useResnet18=False).to(DEVICE)
 
     
-    # list_of_files = [fname for fname in glob.glob("./ssl_centralized/check*.pth")]
+    # list_of_files = [fname for fname in glob.glob("./reference_modelscheck*.pth")]
     # latest_round_file = max(list_of_files, key=os.path.getctime)
     
     latest_round_file = './reference_models/ssl_centralized_model_csa_1225.pth'

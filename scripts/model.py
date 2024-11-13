@@ -91,6 +91,7 @@ class SimCLRPredictor(nn.Module):
         self.predictor = nn.Linear(self.simclr.encoded_size, num_classes)
         
         self.simclr.setInference(True)
+        self.tune_encoder = tune_encoder
         
         if tune_encoder:
             for param in self.simclr.parameters():
@@ -105,6 +106,13 @@ class SimCLRPredictor(nn.Module):
         state_dict = OrderedDict({k: torch.tensor(v) for k, v in params_dict})
         
         self.simclr.load_state_dict(state_dict, strict=True)
+        
+        if self.tune_encoder:
+            for param in self.simclr.parameters():
+                param.requires_grad = True
+        else:
+            for param in self.simclr.parameters():
+                param.requires_grad = False
     
     def getLatent(self, x):
         self.simclr.setInference(True)

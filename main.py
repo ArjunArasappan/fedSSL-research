@@ -9,6 +9,7 @@ import argparse
 
 import client as client
 from model import SimCLR, SimCLRPredictor, NTXentLoss, GlobalPredictor
+import centralized_eval
 import utils
 from test import evaluate_gb_model 
 import os 
@@ -67,8 +68,6 @@ def fit_config_fn(server_round: int):
     return fit_config
 
 
-centralized_finetune, centralized_test = utils.load_centralized_data()
-
 class SaveModelStrategy(fl.server.strategy.FedAvg):
     def aggregate_fit(self, server_round, results, failures):
         aggregated_parameters, aggregated_metrics = super().aggregate_fit(server_round, results, failures)
@@ -92,7 +91,7 @@ class SaveModelStrategy(fl.server.strategy.FedAvg):
                 
             
             if server_round % 5 == 0 or server_round == 1:
-                # torch.save(gb_simclr.state_dict(), path + file)
+                centralized_eval.calculate_metrics(gb_simclr)
                 
 
         return aggregated_parameters, aggregated_metrics
@@ -137,9 +136,13 @@ if __name__ == "__main__":
     print("Resnet18", useResnet18)
     
     print("Num Rounds: ", NUM_ANCHORS)
+    
+    
         
     fds = utils.get_anchored_fds(NUM_CLIENTS, NUM_ANCHORS)
-    anchors_data = utils.load_partition(fds, NUM_CLIENTS)
+    anchor_data = utils.load_partition(fds, NUM_CLIENTS)
+    
+    centralized_eval.init(anchor_data)
     
     fl.simulation.start_simulation(
         client_fn=client.get_client_fn(fds, useResnet18, NUM_CLIENTS),

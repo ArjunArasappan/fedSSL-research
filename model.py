@@ -109,6 +109,9 @@ class SimCLRPredictor(nn.Module):
         state_dict = OrderedDict({k: torch.tensor(v) for k, v in params_dict})
         
         self.simclr.load_state_dict(state_dict, strict=True)
+        
+    def set_encoder_state_dict(self, state_dict):
+        self.simclr.load_state_dict(state_dict, strict=True)
 
     def forward(self, x):
         self.simclr.setInference(True)

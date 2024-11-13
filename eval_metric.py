@@ -66,25 +66,35 @@ class EvalMetric:
 
         abs_ref_latent = self.reference_model(testbatch)
         # norm_ref_latent = abs_ref_latent / torch.norm(abs_ref_latent, p=2, dim=1, keepdim=True)
-
         
         #batchsize x num_anchors
-        relative_model = abs_model_latent @ self.model_anchor_latents.T
-        relative_ref = abs_ref_latent @ self.ref_anchor_latents.T
+        relative_model = abs_model_latent.matmul(self.model_anchor_latents.T)
+        relative_ref = abs_ref_latent.matmul(self.ref_anchor_latents.T)
+        
+        print("rel model", relative_model[0])
+        print("rel ref", relative_ref[0])
+        
+        # print(relative_model[0].T.dot(relative_ref[0]) )
+        
+        
+
+
+        
+
 
         #normalize relative representations
 
         rel_model_normed = relative_model / torch.norm(relative_model, p=2, dim=1, keepdim=True)
         rel_ref_normed = relative_ref / torch.norm(relative_ref, p=2, dim=1, keepdim=True)
         
-        print(torch.norm(rel_model_normed, p=2, dim=1, keepdim=True))
-        print(torch.norm(rel_ref_normed, p=2, dim=1, keepdim=True))
+        # print(torch.norm(rel_model_normed, p=2, dim=1, keepdim=True))
+        # print(torch.norm(rel_ref_normed, p=2, dim=1, keepdim=True))
         
         similarities = torch.sum(relative_model * relative_ref, dim=1)
-        print(similarities)
+        # print(similarities)
 
         similarities_normed = torch.sum(rel_model_normed * rel_ref_normed, dim=1)
-        print(similarities_normed)
+        # print(similarities_normed)
 
         
         sim_data = [torch.mean(similarities).item(), torch.median(similarities).item(), torch.var(similarities).item()]

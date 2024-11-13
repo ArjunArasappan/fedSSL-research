@@ -4,7 +4,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader
-from scripts.model import SimCLR, SimCLRPredictor, NTXentLoss
+from model import SimCLR, SimCLRPredictor, NTXentLoss
 from flwr_datasets import FederatedDataset
 from flwr_datasets.partitioner import IidPartitioner
 import torchvision.transforms as transforms
@@ -19,7 +19,7 @@ simclr = None
 
 DEVICE = utils.DEVICE
 
-EPOCHS = 1000
+EPOCHS = 100
 SEGMENTS = 1
 
 #epochs to train linear
@@ -30,97 +30,72 @@ finetune_fraction = 0.3
 
 log_path = "./log.txt"
 
-useLinearPred = True
 
 
+reference_model = None
+relative_eval_metric = None
+useResnet18 = False
+simclr_predictor = None
 
-def main(useResnet18):
-    #Data: load augmented train data for SimCLR, test data, 
-    #unsupervised SSL learning of simCLR
-    #apply relative representations to guess accuracy
-    #find actualy representation accuracy with linear predictors & MLP's on frozen encoder
+def init(anchors):
+    global reference_model, relative_eval_metric, trainset, testset, simclr_predictor
     
+    trainset, testset = utils.load_centralized_data()
         
-    trainset, testset = utils.load_augmented()
     
-    #setup eval metric
     
     reference_path = './reference_models/ssl_centralized_model_csa_1225.pth'
     
-    reference = SimCLR(DEVICE, useResnet18=False).to(DEVICE)
-    state_dict = torch.load(reference_path,  map_location=torch.device('cpu'))
-    reference.load_state_dict(state_dict, strict = True)
+    reference_model = SimCLR(DEVICE, useResnet18=False).to(DEVICE)
     
-    reference.eval()
-    reference.setInference(True)
+    reference_model.load_state_dict(torch.load(reference_path,  map_location=torch.device('cpu')), strict = True)
+    # reference.load_state_dict(torch.load(reference_path), strict = True)
+    
+    reference_model.eval()
+    reference_model.setInference(True)
         
-    relative_eval = EvalMetric(reference)
-    anchors = relative_eval.selectAnchors(trainset)
+    relative_eval_metric = EvalMetric(reference_model)
+    anchors = relative_eval_metric.selectAnchors(trainset)
     
-    relative_eval.setAnchors(anchors)
+    relative_eval_metric.setAnchors(anchors)
+
+    relative_eval_metric.calcReferenceAnchorLatents()
+    
+    simclr_predictor = SimCLRPredictor(10, DEVICE, useResnet18=useResnet18, tune_encoder = False).to(DEVICE)
+    
+    random_init = SimCLR(DEVICE, useResnet18=False).to(DEVICE)
+    
+    calculate_metrics(random_init, 0)
+    
 
 
-    relative_eval.calcReferenceAnchorLatents()
     
-    ssl_simulation(trainset, testset, useResnet18, relative_eval)
+def calculate_metrics(simclr, round):
+    global reference_model, relative_eval_metric, trainset, testset, useResnet18, simclr_predictor
     
-def ssl_simulation(trainset, testset, useResnet18, relative_eval):
-    simclr = SimCLR(DEVICE, useResnet18=useResnet18).to(DEVICE)
-    simclr_predictor = SimCLRPredictor(10, DEVICE, useResnet18=useResnet18, tune_encoder = False, linear_predictor = useLinearPred).to(DEVICE)
+    state_dict = simclr.state_dict()
+    weights = [v.cpu().numpy() for v in state_dict.values()]
 
-    simclr_optimizer = torch.optim.Adam(simclr.parameters(), lr=3e-4)
+    simclr_predictor.set_encoder_parameters(weights)
+    
     predictor_optimizer = torch.optim.Adam(simclr_predictor.parameters(), lr=3e-4)
-
     
     ntxent = NTXentLoss(device=DEVICE)
     cross_entropy = nn.CrossEntropyLoss()
     
-    
     trainloader = DataLoader(trainset, batch_size = 512, shuffle = True)
-    testloader = DataLoader(testset, batch_size = 1024, shuffle = True)\
+    testloader = DataLoader(testset, batch_size = 512, shuffle = True)\
     
 
-    
-    
-    for epoch in range(EPOCHS * SEGMENTS):
-        
-        mean, median = computeSimilarities(testloader, simclr, relative_eval)
+    mean, median = computeSimilarities(testloader, simclr, relative_eval_metric)
 
-        supervised_train(simclr, simclr_predictor, trainloader, predictor_optimizer, cross_entropy)
-        loss, accuracy = supervised_test(simclr_predictor, testloader, cross_entropy)
-        
-        train(simclr, trainloader, simclr_optimizer, ntxent)
-        
-        utils.sim_log([SEGMENTS, epoch, mean.item(), median.item(), loss, accuracy])
+    supervised_train(simclr_predictor, trainloader, predictor_optimizer, cross_entropy)
+    loss, accuracy = supervised_test(simclr_predictor, testloader, cross_entropy)
+    
+    
+    utils.sim_log([SEGMENTS, round, mean.item(), median.item(), loss, accuracy])
         
     
-
-def train(net, trainloader, optimizer, criterion):
-    net.train()
-    
-    num_batches = len(trainloader)
-    batch = 0
-    
-    for item in trainloader:
-        _, x_i, x_j = item['img']
-        
-        optimizer.zero_grad()
-        
-        x_i, x_j = x_i.to(DEVICE), x_j.to(DEVICE)
-        
-        z_i, z_j = net(x_i), net(x_j)
-    
-        loss = criterion(z_i, z_j)
-
-        loss.backward()
-        optimizer.step()
-
-        print(f"Train Batch: {batch} / {num_batches}")
-        batch += 1
-        
-        if batch >= num_batches / SEGMENTS:
-            break
-        
     
 def computeSimilarities(testloader, simclr, relative_eval):
     
@@ -129,14 +104,14 @@ def computeSimilarities(testloader, simclr, relative_eval):
     batch = 0
     for item in testloader:
         
-        x = item['img']
+        x, _, _ = item['img']
         
         x = x.to(DEVICE)
         
         relative_eval.calcModelLatents(simclr)
         
         sim, normed_sim = relative_eval.computeSimilarity(x, simclr)
-        print(f"Computing sims {batch}/{len(testloader)}: {sim[0]}, {sim[1]}")
+        print(f"Computing sims {batch}/{len(testloader)}: {sim}, {normed_sim}")
         similarity.append(sim)
         similarity_normed.append(normed_sim)
         batch += 1
@@ -147,11 +122,7 @@ def computeSimilarities(testloader, simclr, relative_eval):
 
     return sim, normed_sim
 
-def supervised_train(simclr, simclr_predictor, trainloader, optimizer, criterion):
-    state_dict = simclr.state_dict()
-    weights = [v.cpu().numpy() for v in state_dict.values()]
-
-    simclr_predictor.set_encoder_parameters(weights)
+def supervised_train(simclr_predictor, trainloader, optimizer, criterion):
     
     simclr_predictor.train()
     
@@ -186,7 +157,9 @@ def supervised_test(simclr_predictor, testloader, criterion):
 
     with torch.no_grad():
         for item in testloader:
-            x , labels = item['img'], item['label']
+            x, _, _, labels = item['img'], item['label']
+            
+            
             x, labels = x.to(DEVICE), labels.to(DEVICE)
             
             logits = simclr_predictor(x)

@@ -4,7 +4,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader
-from model import SimCLR, SimCLRPredictor, NTXentLoss
+from fed_learning.model import SimCLR, SimCLRPredictor, NTXentLoss
 from flwr_datasets import FederatedDataset
 from flwr_datasets.partitioner import IidPartitioner
 import torchvision.transforms as transforms

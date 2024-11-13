@@ -3252,3 +3252,15 @@ debug | INFO flwr 2024-11-11 20:19:41,548 | server.py:94 | Evaluating initial gl
 debug | INFO flwr 2024-11-11 20:19:41,548 | server.py:110 | 
 debug | INFO flwr 2024-11-11 20:19:41,548 | server.py:111 | [ROUND 1]
 debug | INFO flwr 2024-11-11 20:19:41,548 | server.py:224 | configure_fit: strategy sampled 5 clients (out of 5)
+debug | INFO flwr 2024-11-11 21:51:51,978 | app.py:193 | Starting Flower simulation, config: num_rounds=1000, no round_timeout
+debug | INFO flwr 2024-11-11 21:51:54,449 | app.py:228 | Flower VCE: Ray initialized with resources: {'CPU': 8.0, 'node:127.0.0.1': 1.0, 'object_store_memory': 2147483648.0, 'node:__internal_head__': 1.0, 'memory': 8295704167.0}
+debug | INFO flwr 2024-11-11 21:51:54,449 | app.py:234 | Optimize your simulation with Flower VCE: https://flower.ai/docs/framework/how-to-run-simulations.html
+debug | INFO flwr 2024-11-11 21:51:54,449 | app.py:257 | Flower VCE: Resources for each Virtual Client: {'num_cpus': 2, 'num_gpus': 0}
+debug | INFO flwr 2024-11-11 21:51:54,476 | app.py:303 | Flower VCE: Creating VirtualClientEngineActorPool with 4 actors
+debug | INFO flwr 2024-11-11 21:51:54,477 | server.py:92 | [INIT]
+debug | INFO flwr 2024-11-11 21:51:54,477 | server.py:279 | Requesting initial parameters from one random client
+debug | INFO flwr 2024-11-11 21:51:58,371 | server.py:286 | Received initial parameters from one random client
+debug | INFO flwr 2024-11-11 21:51:58,372 | server.py:94 | Evaluating initial global parameters
+debug | INFO flwr 2024-11-11 21:51:58,372 | server.py:110 | 
+debug | INFO flwr 2024-11-11 21:51:58,372 | server.py:111 | [ROUND 1]
+debug | INFO flwr 2024-11-11 21:51:58,372 | server.py:224 | configure_fit: strategy sampled 5 clients (out of 5)
