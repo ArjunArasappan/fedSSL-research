@@ -66,7 +66,7 @@ class EvalMetric:
         
         with torch.no_grad():
             #num_anchors * latentsize
-            self.model_anchor_latents = model(self.anchors).to(DEVICE)
+            self.model_anchor_latents = self.reference_model(self.anchors).to(DEVICE)
             self.model_anchor_latents = self.batch_normalize(self.model_anchor_latents)
             self.model_anchor_latents = F.normalize(self.model_anchor_latents, p = 2, dim = 1)
                                     
@@ -80,7 +80,7 @@ class EvalMetric:
         model.setInference(True)
         
         #batchsize x latentsize
-        abs_model_latent = model(testbatch)
+        abs_model_latent = self.reference_model(testbatch)
         abs_ref_latent = self.reference_model(testbatch)
         
         abs_model_latent = self.batch_normalize(abs_model_latent)
