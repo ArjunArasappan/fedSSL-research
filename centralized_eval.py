@@ -129,6 +129,7 @@ def computeSimilarities(testloader, simclr, relative_eval):
         
         
         sim_data = relative_eval.computeSimilarity(x, simclr)
+        
         print(f"Computing sims {batch}/{len(testloader)}: {sim_data}")
         similarities.append(sim_data)
         batch += 1
