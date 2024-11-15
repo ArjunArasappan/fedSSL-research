@@ -21,7 +21,7 @@ evaluateEveryRound = False
 DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 centralized_finetune_split = 1
-centralized_test_split = 0.25
+centralized_test_split = 1
 
 FINETUNE_EPOCHS = 1
 BATCH_SIZE = 512

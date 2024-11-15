@@ -121,8 +121,6 @@ class EvalMetric:
         
      
 
-        relative_model = relative_model / torch.norm(abs_model_latent, p=2, dim=1, keepdim=True)
-        relative_ref = relative_ref / torch.norm(abs_ref_latent, p=2, dim=1, keepdim=True)
         
         # print(rel_model_normed[:6, :6])
         # print(rel_ref_normed[:6, :6])
