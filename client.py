@@ -116,7 +116,7 @@ class CifarClient(fl.client.NumPyClient):
         results = train(self.simclr, self.trainloader, self.optimizer, self.loss, epochs=1)
         
         data = ['client train', config['current_round'], self.useResnet18, self.num_clients, self.cid, results['Loss']]
-        utils.sim_log(data)
+        utils.sim_log(data, './log_files/fl_loss.csv')
         
         return self.get_parameters(config={}), len(self.trainloader), results
 

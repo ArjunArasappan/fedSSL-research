@@ -14,12 +14,13 @@ class SimCLRTransform:
         s = 1
         color_jitter = transforms.ColorJitter(0.8 * s, 0.8 * s, 0.8 * s, 0.2 * s)
         self.size = size
-
+        
         self.augment_transform = [
             transforms.RandomResizedCrop(size=size),
             transforms.RandomHorizontalFlip(),
             transforms.RandomApply([color_jitter], p=0.8),
             transforms.RandomGrayscale(p=0.2),
+
         ]
         
         if random.choice([True, False]):
@@ -27,18 +28,28 @@ class SimCLRTransform:
 
                 
         self.augment_transform.append(transforms.ToTensor())
+        self.augment_transform.append(transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)))
+
+
 
     def __call__(self, x):
+
+
 
         transform = transforms.Compose(self.augment_transform)
 
 
         return (self.test_transform(x), transform(x), transform(x))
+    
+
 
     def test_transform(self, x):
         test =  transforms.Compose([
-            transforms.Resize(self.size),
-            transforms.ToTensor()
+            transforms.ToTensor(),
+            transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
+
+
+
         ])
         
         return (test(x))

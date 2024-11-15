@@ -44,7 +44,7 @@ def init(anchors, test_data):
         
     
     
-    reference_path = './reference_models/ssl_centralized_model_csa_1225.pth'
+    reference_path = './reference_models/ssl_centralized_model_csa_105.pth'
     
     reference_model = SimCLR(DEVICE, useResnet18=False).to(DEVICE)
     
@@ -54,31 +54,31 @@ def init(anchors, test_data):
     reference_model.load_state_dict(torch.load(reference_path), strict = False)
     reference_model.to(utils.DEVICE)
     
-    print('cujh')
     
     reference_model.eval()
     reference_model.setInference(True)
     
-    print('cujh')
 
         
     relative_eval_metric = EvalMetric(reference_model)
+    
     print('selected')
+    
     relative_eval_metric.setAnchors(anchors)
 
-    print('cujh')
+
 
 
     relative_eval_metric.calcReferenceAnchorLatents()
     
-    print('cujh')
-
     
     simclr_predictor = SimCLRPredictor(10, DEVICE, useResnet18=useResnet18, tune_encoder = False).to(DEVICE)
     
     random_init = SimCLR(DEVICE, useResnet18=False).to(DEVICE)
     
-    # calculate_metrics(random_init, 0)
+
+    
+    calculate_metrics(random_init, 0)
     
 
 
@@ -99,14 +99,16 @@ def calculate_metrics(simclr, round):
     trainloader = DataLoader(trainset, batch_size = 512, shuffle = True, num_workers = utils.num_workers)
     testloader = DataLoader(testset, batch_size = 512, shuffle = True, num_workers = utils.num_workers)
     
+    similarities = computeSimilarities(testloader, SimCLR(DEVICE, useResnet18=False).to(DEVICE), relative_eval_metric)
 
-    similarities = computeSimilarities(testloader, simclr, relative_eval_metric)
 
     supervised_train(simclr_predictor, trainloader, predictor_optimizer, cross_entropy)
     loss, accuracy = supervised_test(simclr_predictor, testloader, cross_entropy)
+
+
     
     
-    utils.sim_log([SEGMENTS, round, loss, accuracy] + similarities)
+    utils.sim_log([SEGMENTS, round, loss, accuracy] + similarities, path = './log_files/simulation_results.csv')
         
     
     
@@ -127,23 +129,16 @@ def computeSimilarities(testloader, simclr, relative_eval):
         
         
         sim_data = relative_eval.computeSimilarity(x, simclr)
-        print(sim_data.shape)
-        print(f"Computing sims {batch}/{len(testloader)}")
+        print(f"Computing sims {batch}/{len(testloader)}: {sim_data}")
         similarities.append(sim_data)
         batch += 1
         
     similarities = torch.stack(similarities)
-    print('before mean sims', similarities)
     similarities = torch.mean(similarities, dim = 0)
-    
-
-    
-    
-    print('mean sims', similarities)
-    
+        
     flattened_list = similarities.flatten().tolist()
 
-    print(f"Relative Eval DONE:")
+    print(f"Relative Eval DONE: {similarities}")
 
 
     return flattened_list

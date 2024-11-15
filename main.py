@@ -4,13 +4,15 @@ import torch
 from torch.utils.data import DataLoader
 
 import torch.nn as nn
+import torch.nn.functional as F
+
 import numpy as np
 from typing import Dict, Optional, Tuple, List, Union
 from collections import OrderedDict
 import argparse
 
 import client as client
-from model import SimCLR, SimCLRPredictor, NTXentLoss, GlobalPredictor
+from model import SimCLR, SimCLRPredictor, NTXentLoss
 import centralized_eval
 import utils
 from test import evaluate_gb_model 
@@ -39,7 +41,7 @@ parser.add_argument(
 parser.add_argument(
     "--num_clients",
     type=int,
-    default=5,
+    default=10,
     help="Number of clients",
 )
 
@@ -148,12 +150,11 @@ if __name__ == "__main__":
     
     #get batch
     
-    dataloader = DataLoader(dataset=anchor_data, batch_size = NUM_ANCHORS)
+    anchorloader = DataLoader(dataset=anchor_data, batch_size = NUM_ANCHORS)
+    testloader = DataLoader(dataset=test_data, batch_size = 512)
 
-    for batch in dataloader:
+    for batch in anchorloader:
         anchor_data = batch['img']
-        
-    print(type(anchor_data))
 
     
     centralized_eval.init(anchor_data, test_data)
@@ -174,8 +175,6 @@ if __name__ == "__main__":
     
     
     data = ['fine_tune', utils.fineTuneEncoder, useResnet18, NUM_CLIENTS, loss, accuracy]
-
-    utils.sim_log(data)
     
     
     

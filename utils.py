@@ -28,7 +28,11 @@ BATCH_SIZE = 512
 
 transform = SimCLRTransform(size=32)
 num_workers = 8
-def sim_log(data, path = './log_files/datalog.csv'):
+
+
+def sim_log(data, path):
+
+        
     with open(path, 'a', newline='') as file:
         writer = csv.writer(file)
         writer.writerow(data)
