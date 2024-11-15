@@ -98,12 +98,14 @@ def calculate_metrics(simclr, round):
     
     trainloader = DataLoader(trainset, batch_size = 512, shuffle = True, num_workers = utils.num_workers)
     testloader = DataLoader(testset, batch_size = 512, shuffle = True, num_workers = utils.num_workers)
-    
-    similarities = computeSimilarities(testloader, SimCLR(DEVICE, useResnet18=False).to(DEVICE), relative_eval_metric)
+
 
 
     supervised_train(simclr_predictor, trainloader, predictor_optimizer, cross_entropy)
     loss, accuracy = supervised_test(simclr_predictor, testloader, cross_entropy)
+    
+    relative_eval_metric.calcModelLatents(simclr)
+    similarities = computeSimilarities(testloader, simclr, relative_eval_metric)
 
 
 
@@ -125,7 +127,7 @@ def computeSimilarities(testloader, simclr, relative_eval):
         
         simclr.setInference(True)
         
-        relative_eval.calcModelLatents(simclr)
+
         
         
         sim_data = relative_eval.computeSimilarity(x, simclr)
