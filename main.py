@@ -157,6 +157,9 @@ if __name__ == "__main__":
         anchor_data = batch['img']
 
     
+    utils.sim_log(['new exp:'], './log_files/fl_loss.csv')
+    utils.sim_log(['new exp:'], './log_files/simulation_results.csv')
+    
     centralized_eval.init(anchor_data, test_data)
     
     fl.simulation.start_simulation(

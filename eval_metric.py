@@ -30,6 +30,18 @@ class EvalMetric:
         print('setanchors')
         self.anchors = anchors.to(DEVICE)
         
+    def batch_normalize(self, batch):
+        #all features should be centered around 0
+        
+        means = torch.mean(batch, dim = 0)
+        stdev = torch.sqrt(torch.var(batch, dim = 0))
+        
+        normalized_batch = (batch - means)
+
+        return normalized_batch
+        
+        
+        
     def calcReferenceAnchorLatents(self):
         
         self.reference_model.eval()
@@ -37,10 +49,11 @@ class EvalMetric:
         with torch.no_grad():
             # num_anchors * latentsize
             self.ref_anchor_latents = self.reference_model(self.anchors).to(DEVICE)
-            self.ref_anchor_normed = F.normalize(self.ref_anchor_latents, p=2, dim=1)
-            
-            latents = self.ref_anchor_latents.matmul(self.ref_anchor_latents.T)
-            
+            self.ref_anchor_latents = self.batch_normalize(self.ref_anchor_latents)
+
+            self.ref_anchor_latents = F.normalize(self.ref_anchor_latents, p = 2, dim = 1)
+
+                        
 
 
     
@@ -54,10 +67,9 @@ class EvalMetric:
         with torch.no_grad():
             #num_anchors * latentsize
             self.model_anchor_latents = model(self.anchors).to(DEVICE)
-            self.model_anchor_normed = F.normalize(self.model_anchor_latents, p=2, dim=1)
-            
-            latents = self.model_anchor_latents.matmul(self.model_anchor_latents.T)
-                        
+            self.model_anchor_latents = self.batch_normalize(self.model_anchor_latents)
+            self.model_anchor_latents = F.normalize(self.model_anchor_latents, p = 2, dim = 1)
+                                    
     # def cos_similarity()
     
     def computeSimilarity(self, testbatch, model):
@@ -69,17 +81,21 @@ class EvalMetric:
         
         #batchsize x latentsize
         abs_model_latent = model(testbatch)
-        # norm_model_latent = abs_model_latent / torch.norm(abs_model_latent, p=2, dim=1, keepdim=True)
-        
-        abs_model_latent = abs_model_latent / 
-
         abs_ref_latent = self.reference_model(testbatch)
         
+        abs_model_latent = self.batch_normalize(abs_model_latent)
+        abs_ref_latent = self.batch_normalize(abs_ref_latent)
+        # norm_model_latent = abs_model_latent / torch.norm(abs_model_latent, p=2, dim=1, keepdim=True)
+        
+        # abs_model_latent = abs_model_latent / 
+
+
+        
         # print(abs_ref_latent)
-        print("mean", torch.mean(abs_model_latent, dim = 0)[:20])
-        print("var", torch.var(abs_model_latent, dim = 0)[:20])
-        print("mean", torch.mean(abs_model_latent, dim = 1)[:20])
-        print("var", torch.var(abs_model_latent, dim = 1)[:20])
+        # print("mean dim 0", torch.mean(abs_model_latent, dim = 0)[:20])
+        # print("var dim 0", torch.var(abs_model_latent, dim = 0)[:20])
+        # print("mean dim 1", torch.mean(abs_model_latent, dim = 1)[:20])
+        # print("var dim 1", torch.var(abs_model_latent, dim = 1)[:20])
         
         # print("mean", torch.mean(abs_ref_latent).mean().item())
         # print("var", torch.var(abs_ref_latent).mean().item())
@@ -92,8 +108,11 @@ class EvalMetric:
 
         
         #batchsize x num_anchors
-        relative_model = abs_model_latent @ self.model_anchor_normed.T
-        relative_ref = abs_ref_latent @ self.ref_anchor_normed.T
+        relative_model = abs_model_latent @ self.model_anchor_latents.T
+        relative_ref = abs_ref_latent @ self.ref_anchor_latents.T
+        
+        relative_model = relative_model / torch.norm(abs_model_latent, p=2, dim=1, keepdim=True)
+        relative_ref = relative_ref / torch.norm(abs_ref_latent, p=2, dim=1, keepdim=True)
         
         # print(relative_model[:6, :6])
         # print(abs_model_latent[:6, :6])
@@ -102,8 +121,8 @@ class EvalMetric:
         
      
 
-        rel_model_normed = relative_model / torch.norm(abs_model_latent, p=2, dim=1, keepdim=True)
-        rel_ref_normed = relative_ref / torch.norm(abs_ref_latent, p=2, dim=1, keepdim=True)
+        relative_model = relative_model / torch.norm(abs_model_latent, p=2, dim=1, keepdim=True)
+        relative_ref = relative_ref / torch.norm(abs_ref_latent, p=2, dim=1, keepdim=True)
         
         # print(rel_model_normed[:6, :6])
         # print(rel_ref_normed[:6, :6])

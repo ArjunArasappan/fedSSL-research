@@ -64,23 +64,25 @@ class MLP(nn.Module):
         return self.net(x)
 
 class SimCLR(nn.Module):
-    def __init__(self, device, useResnet18, image_size=32, projection_size=2048, projection_hidden_size=4096, num_layer = 2) -> None:
+    def __init__(self, device, useResnet18, image_size=32, projection_size=2048, projection_hidden_size=4096, num_layer = 2, pretrain = False) -> None:
         super(SimCLR, self).__init__()
         
         if useResnet18:
-            self.encoder = resnet18(weights=None).to(device)
+            weights = None
+            if pretrain:
+                weights = ResNet18_Weights
+            self.encoder = resnet18(weights=weights).to(device)
         else:
+            weights = None
+            if pretrain:
+                weights = ResNet50_Weights
             self.encoder = resnet50(weights=None).to(device)
 
 
         self.encoded_size = self.encoder.fc.in_features
         self.encoder.fc = nn.Identity()
         
-        self.batch_norm = nn.BatchNorm1d(self.encoded_size)
-        
-        with torch.no_grad():
-            self.batch_norm.weight.copy_(1/3)
-            self.batch_norm.bias.copy_(-1)
+
         
         self.projected_size = projection_size                
         self.proj_head = MLP(self.encoded_size, projection_size, projection_hidden_size)
@@ -93,7 +95,6 @@ class SimCLR(nn.Module):
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         e1 = self.encoder(x)
-        e1 = self.batch_norm(e1)
         if self.isInference:
             return e1
         return self.proj_head(e1)
