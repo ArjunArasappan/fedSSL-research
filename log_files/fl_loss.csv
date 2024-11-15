@@ -10550,3 +10550,10 @@ client train,39,False,10,2,6.306265354156494
 new exp:
 new exp:
 new exp:
+new exp:
+new exp:
+client train,1,False,10,8,6.894326686859131
+client train,1,False,10,5,6.893237590789795
+client train,1,False,10,0,6.891273021697998
+client train,1,False,10,6,6.890859127044678
+client train,1,False,10,3,6.89056921005249

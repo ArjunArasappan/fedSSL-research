@@ -79,7 +79,6 @@ class EvalMetric:
         
         model.setInference(True)
         
-        self.calcModelLatents()
         
         #batchsize x latentsize
         abs_model_latent = model(testbatch)
