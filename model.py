@@ -78,6 +78,8 @@ class SimCLR(nn.Module):
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         e1 = self.encoder(x)
+        print("ENCODER OUTPUT", e1)
+        print(self.isInference)
         if self.isInference:
             return e1
         return self.proj_head(e1)

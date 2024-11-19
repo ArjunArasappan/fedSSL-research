@@ -52,6 +52,11 @@ def main(useResnet18):
     
 def ssl_simulation(trainset, testset, useResnet18, relative_eval):
     simclr = SimCLR(DEVICE, useResnet18=useResnet18).to(DEVICE)
+    
+    # state_dict = torch.load("/Users/arjunarasappan/Documents/Flower 2024 Internship/fedSSL-research/reference_models/ssl_centralized_model_csa_1995.pth", map_location=torch.device('cpu'))
+    # simclr.load_state_dict(state_dict, strict = False)
+    
+    
     simclr_predictor = SimCLRPredictor(10, DEVICE, useResnet18=useResnet18, tune_encoder = False, linear_predictor = useLinearPred).to(DEVICE)
 
     simclr_optimizer = torch.optim.Adam(simclr.parameters(), lr=3e-4)
@@ -110,13 +115,14 @@ def computeSimilarities(testloader, simclr, relative_eval):
     
     means, medians = [], []
     batch = 0
+    relative_eval.calcModelLatents(simclr)
     for item in testloader:
         
         x = item['img']
         
         x = x.to(DEVICE)
         
-        relative_eval.calcModelLatents(simclr)
+
         mean, median = relative_eval.computeSimilarity(x, simclr)
         print(f"Computing sims {batch}/{len(testloader)}: {mean}, {median}")
         means.append(mean)

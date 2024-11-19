@@ -3,7 +3,7 @@ from transform import SimCLRTransform
 from flwr_datasets import FederatedDataset
 from flwr_datasets.partitioner import IidPartitioner
 import torchvision.transforms as transforms
-
+import numpy as np
 import csv
 
 ssl_transform = SimCLRTransform()

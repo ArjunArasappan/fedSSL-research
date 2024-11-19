@@ -26,7 +26,7 @@ class EvalMetric:
         
     def load_reference(self):
         
-        state_dict = torch.load("/root/fedSSL-research/ssl_centralized/ssl_centralized_model_csa_1940.pth")
+        state_dict = torch.load("/Users/arjunarasappan/Documents/Flower 2024 Internship/fedSSL-research/reference_models/ssl_centralized_model_csa_1225.pth", map_location=torch.device('cpu'))
         self.reference_model.load_state_dict(state_dict, strict = True)
     
     def selectAnchors(self):
@@ -37,11 +37,12 @@ class EvalMetric:
         
         self.anchors = torch.stack(self.anchors)
         self.anchors = self.anchors.to(DEVICE)
-        #anchors have shape of (200, 3, 32, 32)
+        # anchors have shape of (200, 3, 32, 32)
         
     def calcReferenceAnchorLatents(self):
-        #caluclate latent representations of anchors for reference model and normalize latents
+        # caluclate latent representations of anchors for reference model and normalize latents
         self.reference_model.eval()
+        self.reference_model.setInference(True)
         
         
         with torch.no_grad():
@@ -66,7 +67,13 @@ class EvalMetric:
     def computeSimilarity(self, testbatch, model):
         testbatch = testbatch.to(DEVICE)
         
+        # print(testbatch)
+        
+        model.eval()
         model.setInference(True)
+        
+        self.reference_model.eval()
+        self.reference_model.setInference(True)
         
         #batchsize x latentsize
         abs_model_latent = model(testbatch)
@@ -74,6 +81,9 @@ class EvalMetric:
 
         abs_ref_latent = self.reference_model(testbatch)
         # norm_ref_latent = abs_ref_latent / torch.norm(abs_ref_latent, p=2, dim=1, keepdim=True)
+        
+        print(abs_model_latent[:10, :10])
+        print(abs_ref_latent[:10, :10])
 
         
         #batchsize x num_anchors
