@@ -27,7 +27,7 @@ FINETUNE_EPOCHS = 1
 BATCH_SIZE = 512
 
 transform = SimCLRTransform(size=32)
-num_workers = 8
+num_workers = 4
 
 
 def sim_log(data, path):

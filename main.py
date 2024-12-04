@@ -118,7 +118,7 @@ if __name__ == "__main__":
     NUM_ANCHORS = args.num_anchors
     
     #client sim code
-    gpu_alloc = 0.2
+    gpu_alloc = 1
     cpu_alloc = 2
     if NUM_CLIENTS < 5:
         gpu_alloc = float(1) / float(NUM_CLIENTS)
@@ -165,7 +165,7 @@ if __name__ == "__main__":
     fl.simulation.start_simulation(
         client_fn=client.get_client_fn(fds, useResnet18, NUM_CLIENTS),
         num_clients= NUM_CLIENTS,
-        config=fl.server.ServerConfig(num_rounds= NUM_ROUNDS),
+        config=fl.server.ServerConfig(num_rounds=NUM_ROUNDS),
         client_resources=client_resources,
         strategy=strategy,
     )

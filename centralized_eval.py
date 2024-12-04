@@ -14,6 +14,7 @@ import os
 import flwr as fl
 import utils
 import csv
+import timm
 
 simclr = None
 
@@ -36,6 +37,17 @@ relative_eval_metric = None
 useResnet18 = False
 simclr_predictor = None
 
+
+def load_expert():
+    
+    loaded_model = SimCLR(DEVICE, useResnet18=useResnet18).to(DEVICE)
+    
+    state_dict = torch.load("/home/harsh/arjun/fedSSL-research/log_files/ssl_centralized_model_csa_1225.pth")
+    loaded_model.load_state_dict(state_dict, strict = False)
+    loaded_model = loaded_model.to(DEVICE)
+    
+    return loaded_model
+
 def init(anchors, test_data):
     global reference_model, relative_eval_metric, trainset, testset, simclr_predictor
     
@@ -44,20 +56,8 @@ def init(anchors, test_data):
         
     
     
-    reference_path = './reference_models/ssl_centralized_model_csa_105.pth'
-    
-    reference_model = SimCLR(DEVICE, useResnet18=False).to(DEVICE)
-    
-    
-    
-    # reference_model.load_state_dict(torch.load(reference_path,  map_location=torch.device('cpu')), strict = True)
-    reference_model.load_state_dict(torch.load(reference_path), strict = False)
-    reference_model.to(utils.DEVICE)
-    
-    
-    reference_model.eval()
-    reference_model.setInference(True)
-    
+    reference_model = load_expert()
+
 
         
     relative_eval_metric = EvalMetric(reference_model)
@@ -65,16 +65,18 @@ def init(anchors, test_data):
     print('selected')
     
     relative_eval_metric.setAnchors(anchors)
-
-
-
-
     relative_eval_metric.calcReferenceAnchorLatents()
     
     
     simclr_predictor = SimCLRPredictor(10, DEVICE, useResnet18=useResnet18, tune_encoder = False).to(DEVICE)
     
     random_init = SimCLR(DEVICE, useResnet18=False).to(DEVICE)
+    
+    # loaded_model = SimCLR(DEVICE, useResnet18=useResnet18).to(DEVICE)
+    
+    # state_dict = torch.load("/home/harsh/arjun/fedSSL-research/log_files/ssl_centralized_model_csa_1225.pth")
+    # loaded_model.load_state_dict(state_dict, strict = False)
+    # loaded_model = loaded_model.to(DEVICE)
     
 
     
@@ -100,6 +102,8 @@ def calculate_metrics(simclr, round):
     testloader = DataLoader(testset, batch_size = 512, shuffle = True, num_workers = utils.num_workers)
 
 
+    # relative_eval_metric.calcModelLatents(simclr)
+    # similarities = computeSimilarities(testloader, simclr, relative_eval_metric)
 
     supervised_train(simclr_predictor, trainloader, predictor_optimizer, cross_entropy)
     loss, accuracy = supervised_test(simclr_predictor, testloader, cross_entropy)
@@ -153,7 +157,8 @@ def supervised_train(simclr_predictor, trainloader, optimizer, criterion):
     num_batches = len(trainloader)
 
     for i in range(fine_tune_epochs):    
-        for idx, item in enumerate(trainloader):
+        idx = 0
+        for item in trainloader:
             (x, _, _), labels = item['img'], item['label']
             
             x, labels = x.to(DEVICE), labels.to(DEVICE)
@@ -168,6 +173,7 @@ def supervised_train(simclr_predictor, trainloader, optimizer, criterion):
             optimizer.step()
 
             print(f"Supervised Train Batch: {idx} / {num_batches}")
+            idx += 1
         
 def supervised_test(simclr_predictor, testloader, criterion):
     simclr_predictor.eval()

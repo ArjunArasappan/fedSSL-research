@@ -157,8 +157,9 @@ def supervised_train(simclr, simclr_predictor, trainloader, optimizer, criterion
     
     num_batches = len(trainloader)
 
-    for i in range(fine_tune_epochs):    
-        for idx, item in enumerate(trainloader):
+    for i in range(fine_tune_epochs):
+        idx = 0    
+        for item in trainloader:
             (x, _, _), labels = item['img'], item['label']
             
             x, labels = x.to(DEVICE), labels.to(DEVICE)
@@ -173,6 +174,7 @@ def supervised_train(simclr, simclr_predictor, trainloader, optimizer, criterion
             optimizer.step()
 
             print(f"Client Train Batch: {idx} / {num_batches}")
+            idx += 1
         
 def supervised_test(simclr_predictor, testloader, criterion):
     simclr_predictor.eval()
