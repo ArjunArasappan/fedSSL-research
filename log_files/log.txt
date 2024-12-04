@@ -155930,3 +155930,15 @@ debug | INFO flwr 2024-12-04 04:40:29,012 | server.py:192 | aggregate_evaluate: 
 debug | INFO flwr 2024-12-04 04:40:29,013 | server.py:112 | 
 debug | INFO flwr 2024-12-04 04:40:29,013 | server.py:113 | [ROUND 7]
 debug | INFO flwr 2024-12-04 04:40:29,013 | server.py:226 | configure_fit: strategy sampled 10 clients (out of 10)
+debug | INFO flwr 2024-12-04 04:42:02,116 | server.py:240 | aggregate_fit: received 10 results and 0 failures
+debug | INFO flwr 2024-12-04 04:42:03,321 | server.py:178 | configure_evaluate: strategy sampled 10 clients (out of 10)
+debug | INFO flwr 2024-12-04 04:42:09,206 | server.py:192 | aggregate_evaluate: received 10 results and 0 failures
+debug | INFO flwr 2024-12-04 04:42:09,206 | server.py:112 | 
+debug | INFO flwr 2024-12-04 04:42:09,206 | server.py:113 | [ROUND 8]
+debug | INFO flwr 2024-12-04 04:42:09,206 | server.py:226 | configure_fit: strategy sampled 10 clients (out of 10)
+debug | INFO flwr 2024-12-04 04:43:42,568 | server.py:240 | aggregate_fit: received 10 results and 0 failures
+debug | INFO flwr 2024-12-04 04:43:44,290 | server.py:178 | configure_evaluate: strategy sampled 10 clients (out of 10)
+debug | INFO flwr 2024-12-04 04:43:49,746 | server.py:192 | aggregate_evaluate: received 10 results and 0 failures
+debug | INFO flwr 2024-12-04 04:43:49,746 | server.py:112 | 
+debug | INFO flwr 2024-12-04 04:43:49,746 | server.py:113 | [ROUND 9]
+debug | INFO flwr 2024-12-04 04:43:49,746 | server.py:226 | configure_fit: strategy sampled 10 clients (out of 10)
