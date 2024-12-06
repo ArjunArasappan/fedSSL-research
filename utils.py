@@ -57,7 +57,7 @@ def get_fds(partitions):
 def get_anchored_fds(num_clients, num_anchors, image_size=32, batch_size=BATCH_SIZE):
     
     #partition into num_clients + 1 partitions with all being equal, except 1st partition is anchor partition 
-    fds = FederatedDataset(dataset="cifar10", partitioners = {'train' : Anchor_Partitioner(num_clients, num_anchors), 'test' : 1})
+    fds = FederatedDataset(dataset="cifar10", partitioners = {'train' : Anchor_Partitioner(num_clients, num_anchors), 'test' : IidPartitioner(1)})
     return fds
 
 def load_partition(fds, partition_id, client_test_split = 0, split = 'train', apply_augment = True):
@@ -73,17 +73,17 @@ def load_partition(fds, partition_id, client_test_split = 0, split = 'train', ap
     
     return partition, None
 
-def load_centralized_data(image_size=32, batch_size=BATCH_SIZE, test_split = centralized_test_split):
+def load_centralized_data(image_size=32, batch_size=BATCH_SIZE, test_split = centralized_test_split, augment=False):
     fds = FederatedDataset(dataset="cifar10", partitioners = {'train' : 1, 'test' : 1})
         
     centralized_train_data = fds.load_split("train")
-    centralized_train_data = centralized_train_data.with_transform(get_transform())
+    centralized_train_data = centralized_train_data.with_transform(get_transform(augment))
     
     if centralized_finetune_split != 1:
         centralized_train_data = centralized_train_data.train_test_split(test_size=centralized_finetune_split, shuffle = True, seed=42)['test']
 
     centralized_test_data = fds.load_split("test")
-    centralized_test_data = centralized_test_data.with_transform(get_transform())
+    centralized_test_data = centralized_test_data.with_transform(get_transform(augment))
 
     if test_split != 1:
         centralized_test_data = centralized_test_data.train_test_split(test_size=test_split, shuffle = True, seed=42)['test']

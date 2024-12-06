@@ -36,12 +36,12 @@ def main(useResnet18):
     simclr = SimCLR(DEVICE, useResnet18=useResnet18).to(DEVICE)
     simclr_predictor = SimCLRPredictor(10, DEVICE, useResnet18=useResnet18, tune_encoder = False).to(DEVICE)
 
-    epochLoad = load_model(simclr)
-    epochLoad = 100
+    # epochLoad = load_model(simclr)
+    epochLoad = 0
 
     simclr_optimizer = optim.SGD(simclr.parameters(), lr=0.01, momentum=0.9, weight_decay=1e-6)
     
-    cosine_scheduler = optim.lr_scheduler.CosineAnnealingLR(simclr_optimizer, T_max = EPOCHS)
+    cosine_scheduler = optim.lr_scheduler.CosineAnnealingLR(simclr_optimizer, T_max = EPOCHS / 2)
 
 
     
@@ -57,7 +57,7 @@ def main(useResnet18):
     
     for epoch in range(epochLoad + 1, EPOCHS):
         avgLoss = ssl_train(epoch, simclr, trainloader, simclr_optimizer, ntxent)
-        if epoch > 100 and epoch % 5 == 0:
+        if epoch > 200 and epoch % 10 == 0:
             save_model(epoch)
 
         utils.sim_log([epoch, avgLoss], './log_files/reference_train.csv')
@@ -116,7 +116,7 @@ def save_model(epoch):
     if not os.path.isdir('./reference_models'):
         os.mkdir('./reference_models')
 
-    torch.save(simclr.state_dict(), f"./reference_models/ssl_centralized_model_csa_{epoch}.pth")
+    torch.save(simclr.state_dict(), f"/home/harsh/arjun/fedSSL-research/reference_models/ssl_centralized_new_{epoch}.pth")
 
 if __name__ == "__main__":
     main(False)

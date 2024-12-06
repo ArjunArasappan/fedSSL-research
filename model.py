@@ -18,7 +18,7 @@ import utils
 
 
 class NTXentLoss(nn.Module):
-    def __init__(self, device, temperature=0.5, ):
+    def __init__(self, device, temperature=0.5):
         super(NTXentLoss, self).__init__()
         self.temperature = temperature
         self.device = device
@@ -110,6 +110,9 @@ class SimCLRPredictor(nn.Module):
         if not tune_encoder:
             for param in self.simclr.parameters():
                 param.requires_grad = False
+
+    def setEncoder(self, encoder):
+        self.simclr.setEncoder(encoder)
                 
     def set_encoder_parameters(self, weights):
         

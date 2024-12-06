@@ -4,7 +4,7 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader
 import utils
-from fed_learning.model import SimCLR, SimCLRPredictor
+from model import SimCLR, SimCLRPredictor
 import os, glob
 
 
@@ -17,9 +17,9 @@ def evaluate_gb_model():
     
     file = load_model(simclr_predictor)
     
-    utils.ssl_log([file])
+    utils.sim_log([file], '/home/harsh/arjun/fedSSL-research/log_files/ssl_log.txt')
     
-    train, test = utils.load_data()
+    train, test = utils.load_centralized_data()
     
     trainloader = DataLoader(train, batch_size = 512)
     testloader = DataLoader(test, batch_size = 512)   
@@ -27,7 +27,7 @@ def evaluate_gb_model():
     optimizer = torch.optim.Adam(simclr_predictor.parameters(), lr=3e-4)
     criterion = nn.CrossEntropyLoss()
     
-    train_epochs = 5
+    train_epochs = 3
     
     fine_tune_predictor(simclr_predictor, trainloader, optimizer, criterion, train_epochs)
     
@@ -35,7 +35,7 @@ def evaluate_gb_model():
     
     data = [file, loss, accuracy]
     
-    utils.ssl_log(data)
+    utils.sim_log(data, '/home/harsh/arjun/fedSSL-research/log_files/ssl_log.txt')
     
 
 
@@ -49,9 +49,9 @@ def load_model(simclr_predictor):
     # list_of_files = [fname for fname in glob.glob("./reference_modelscheck*.pth")]
     # latest_round_file = max(list_of_files, key=os.path.getctime)
     
-    latest_round_file = './reference_models/ssl_centralized_model_csa_1225.pth'
+    latest_round_file = '/home/harsh/arjun/fedSSL-research/reference_models/ssl_centralized_new_400.pth'
     print("Loading pre-trained model from:", latest_round_file)
-    state_dict = torch.load(latest_round_file, map_location=torch.device('cpu') )
+    state_dict = torch.load(latest_round_file)
     
     simclr.load_state_dict(state_dict)
     

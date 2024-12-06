@@ -4,12 +4,13 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader
-from fed_learning.model import SimCLR, SimCLRPredictor, NTXentLoss
+from model import SimCLR, SimCLRPredictor, NTXentLoss
 from flwr_datasets import FederatedDataset
 from flwr_datasets.partitioner import IidPartitioner
 import torchvision.transforms as transforms
 from eval_metric import EvalMetric
 import os
+import timm
 
 import flwr as fl
 import utils
@@ -23,7 +24,7 @@ EPOCHS = 1000
 SEGMENTS = 1
 
 #epochs to train linear
-fine_tune_epochs = 3
+fine_tune_epochs = 1
 
 
 finetune_fraction = 0.3
@@ -41,32 +42,93 @@ def main(useResnet18):
     #find actualy representation accuracy with linear predictors & MLP's on frozen encoder
     
         
-    trainset, testset = utils.load_augmented()
+
+        
+    fds = utils.get_anchored_fds(1, 300)
+    anchor_data, _ = utils.load_partition(fds, 1, split = 'train', apply_augment = False)
+    test_data, _ = utils.load_partition(fds, 0, split = 'test', apply_augment = False)
+    train_data, _ = utils.load_partition(fds, 0, split = 'train', apply_augment = True)
+
+    
+    
+    #get batch
+    
+    anchorloader = DataLoader(dataset=anchor_data, batch_size = 300)
+    testloader = DataLoader(dataset=test_data, batch_size = 512)
+
+    for batch in anchorloader:
+        anchor_data = batch['img']
+    
+
     
     #setup eval metric
     
-    reference_path = './reference_models/ssl_centralized_model_csa_1225.pth'
+    reference_path = '/home/harsh/arjun/fedSSL-research/log_files/ssl_centralized_model_csa_1225.pth'
     
     reference = SimCLR(DEVICE, useResnet18=False).to(DEVICE)
-    state_dict = torch.load(reference_path,  map_location=torch.device('cpu'))
+    state_dict = torch.load(reference_path)
     reference.load_state_dict(state_dict, strict = True)
     
-    reference.eval()
-    reference.setInference(True)
+
+    
         
-    relative_eval = EvalMetric(reference)
-    anchors = relative_eval.selectAnchors(trainset)
+
+    relative_eval_metric = EvalMetric(reference)
+        
+    relative_eval_metric.setAnchors(anchor_data)
+    relative_eval_metric.calcReferenceAnchorLatents()
     
-    relative_eval.setAnchors(anchors)
+    ssl_simulation(train_data, test_data, useResnet18, relative_eval_metric)
+    
+def load_model():
+    simclr = SimCLR(DEVICE, useResnet18=False).to(DEVICE)
+    
+    reference_path = '/home/harsh/arjun/fedSSL-research/reference_models/ssl_centralized_new_390.pth'
+    
+    reference = SimCLR(DEVICE, useResnet18=False).to(DEVICE)
+    state_dict = torch.load(reference_path)
+    reference.load_state_dict(state_dict, strict = True)
+    
+    return reference
+
+    
+    # Load the default ResNet50 model
+    model = timm.create_model("resnet50", pretrained=False)
+
+    # Replace the first convolutional layer with a 3x3 kernel
+    model.conv1 = nn.Conv2d(
+        in_channels=3,
+        out_channels=64,
+        kernel_size=3,
+        stride=1,  # Adjust stride for smaller inputs (e.g., CIFAR-10)
+        padding=1,
+        bias=False
+    )
+
+    # Load the pre-trained weights non-strictly to account for the `conv1` change
+    state_dict = torch.hub.load_state_dict_from_url(
+        "https://huggingface.co/edadaltocg/resnet50_simclr_cifar10/resolve/main/pytorch_model.bin"
+    )
+    model.load_state_dict(state_dict, strict=False)  # Ignore mismatch in layers like `conv1`
 
 
-    relative_eval.calcReferenceAnchorLatents()
+    model.fc = nn.Identity()
+    model.eval()
+
+
+    return model.to(DEVICE)
     
-    ssl_simulation(trainset, testset, useResnet18, relative_eval)
+    
     
 def ssl_simulation(trainset, testset, useResnet18, relative_eval):
     simclr = SimCLR(DEVICE, useResnet18=useResnet18).to(DEVICE)
-    simclr_predictor = SimCLRPredictor(10, DEVICE, useResnet18=useResnet18, tune_encoder = False, linear_predictor = useLinearPred).to(DEVICE)
+    
+    
+    
+    simclr = load_model()
+    
+    
+    simclr_predictor = SimCLRPredictor(10, DEVICE, useResnet18=useResnet18, tune_encoder = False).to(DEVICE)
 
     simclr_optimizer = torch.optim.Adam(simclr.parameters(), lr=3e-4)
     predictor_optimizer = torch.optim.Adam(simclr_predictor.parameters(), lr=3e-4)
@@ -77,12 +139,17 @@ def ssl_simulation(trainset, testset, useResnet18, relative_eval):
     
     
     trainloader = DataLoader(trainset, batch_size = 512, shuffle = True)
-    testloader = DataLoader(testset, batch_size = 1024, shuffle = True)\
+    testloader = DataLoader(testset, batch_size = 1024, shuffle = True)
     
 
     
-    
+    utils.sim_log(["SEGMENTS", "epoch", "mean", "median", "loss", "accuracy"], path = '/home/harsh/arjun/fedSSL-research/log_files/centralized_results.csv')
+
+
     for epoch in range(EPOCHS * SEGMENTS):
+        
+        # simclr.setInference(True)
+        simclr.eval()
         
         mean, median = computeSimilarities(testloader, simclr, relative_eval)
 
@@ -91,7 +158,7 @@ def ssl_simulation(trainset, testset, useResnet18, relative_eval):
         
         train(simclr, trainloader, simclr_optimizer, ntxent)
         
-        utils.sim_log([SEGMENTS, epoch, mean.item(), median.item(), loss, accuracy])
+        utils.sim_log([SEGMENTS, epoch, mean.item(), median.item(), loss, accuracy], path = '/home/harsh/arjun/fedSSL-research/log_files/centralized_results.csv')
         
     
 
@@ -125,27 +192,26 @@ def train(net, trainloader, optimizer, criterion):
 def computeSimilarities(testloader, simclr, relative_eval):
     
     
-    similarity, similarity_normed = [], []
+    means, medians = [], []
     batch = 0
+    relative_eval.calcModelLatents(simclr)
     for item in testloader:
         
         x = item['img']
         
         x = x.to(DEVICE)
         
-        relative_eval.calcModelLatents(simclr)
-        
-        sim, normed_sim = relative_eval.computeSimilarity(x, simclr)
-        print(f"Computing sims {batch}/{len(testloader)}: {sim[0]}, {sim[1]}")
-        similarity.append(sim)
-        similarity_normed.append(normed_sim)
+
+        mean, median = relative_eval.computeSimilarity(x, simclr)
+        print(f"Computing sims {batch}/{len(testloader)}: {mean}, {median}")
+        means.append(mean)
+        medians.append(median)
         batch += 1
         
-    sim = torch.mean(torch.Tensor(similarity), dim = 1)
-    normed_sim = torch.mean(torch.Tensor(similarity), dim = 1)
-    print(f"Relative Eval DONE: {sim}, {normed_sim}")
+    mean, median = torch.mean(torch.Tensor(means)), torch.median(torch.Tensor(medians))
+    print(f"Relative Eval DONE: {mean}, {median}")
 
-    return sim, normed_sim
+    return mean, median
 
 def supervised_train(simclr, simclr_predictor, trainloader, optimizer, criterion):
     state_dict = simclr.state_dict()
@@ -198,8 +264,8 @@ def supervised_test(simclr_predictor, testloader, criterion):
             loss += criterion(logits, labels).item()
             
             correct += (predicted == labels).sum().item()
-            if batch >= num_batches / 2:
-                break
+            # if batch >= num_batches / 2:
+            #     break
             print(f"Test Batch: {batch} / {num_batches}")
             batch += 1
   
@@ -214,7 +280,7 @@ def save_model(acc):
     if not os.path.isdir('weights_nosched'):
         os.mkdir('weights_nosched')
         
-    torch.save(simclr_predictor.state_dict(), f"./weights_nosched/centralized_model_{acc}.pth")
+    torch.save(simclr_predictor.state_dict(), f"/home/harsh/arjun/fedSSL-research/log_files/centralized_model_{acc}.pth")
     count += 1
 
 if __name__ == "__main__":

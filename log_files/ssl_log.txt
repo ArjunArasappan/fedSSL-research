@@ -39,3 +39,8 @@
 ./ssl_centralized/checkpoint_round_1000.pth
 ./ssl_centralized/ssl_centralized_model_csa_1225.pth
 ./ssl_centralized/ssl_centralized_model_csa_1225.pth,0.7755034834146499,0.7325
+/home/harsh/arjun/fedSSL-research/reference_models/ssl_centralized_new_400.pth
+/home/harsh/arjun/fedSSL-research/reference_models/ssl_centralized_new_400.pth
+/home/harsh/arjun/fedSSL-research/reference_models/ssl_centralized_new_400.pth
+/home/harsh/arjun/fedSSL-research/reference_models/ssl_centralized_new_400.pth
+/home/harsh/arjun/fedSSL-research/reference_models/ssl_centralized_new_400.pth,1.1862207889556884,0.5703
