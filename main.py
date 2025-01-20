@@ -148,7 +148,7 @@ if __name__ == "__main__":
     test_data, _ = utils.load_partition(fds, 0, split = 'test', apply_augment = False)
     
     
-    #get batch
+    # get batch
     
     anchorloader = DataLoader(dataset=anchor_data, batch_size = NUM_ANCHORS)
     testloader = DataLoader(dataset=test_data, batch_size = 512)

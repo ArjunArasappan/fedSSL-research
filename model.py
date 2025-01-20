@@ -110,6 +110,8 @@ class SimCLRPredictor(nn.Module):
         if not tune_encoder:
             for param in self.simclr.parameters():
                 param.requires_grad = False
+                
+
 
     def setEncoder(self, encoder):
         self.simclr.setEncoder(encoder)

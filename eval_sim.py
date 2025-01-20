@@ -44,7 +44,7 @@ def main(useResnet18):
         
 
         
-    fds = utils.get_anchored_fds(1, 300)
+    fds = utils.get_anchored_fds(1, 500)
     anchor_data, _ = utils.load_partition(fds, 1, split = 'train', apply_augment = False)
     test_data, _ = utils.load_partition(fds, 0, split = 'test', apply_augment = False)
     train_data, _ = utils.load_partition(fds, 0, split = 'train', apply_augment = True)
@@ -53,7 +53,7 @@ def main(useResnet18):
     
     #get batch
     
-    anchorloader = DataLoader(dataset=anchor_data, batch_size = 300)
+    anchorloader = DataLoader(dataset=anchor_data, batch_size = 500)
     testloader = DataLoader(dataset=test_data, batch_size = 512)
 
     for batch in anchorloader:
@@ -83,7 +83,7 @@ def main(useResnet18):
 def load_model():
     simclr = SimCLR(DEVICE, useResnet18=False).to(DEVICE)
     
-    reference_path = '/home/harsh/arjun/fedSSL-research/reference_models/ssl_centralized_new_390.pth'
+    reference_path = '/home/harsh/arjun/fedSSL-research/reference_models/ssl_centralized_new_480.pth'
     
     reference = SimCLR(DEVICE, useResnet18=False).to(DEVICE)
     state_dict = torch.load(reference_path)
